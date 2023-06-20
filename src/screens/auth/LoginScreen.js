@@ -2,19 +2,38 @@ import React, { useState } from 'react';
 import { View, ImageBackground } from 'react-native';
 import styles from '../../styles/LoginScreenStyles';
 import { Button, Text, TextInput } from 'react-native-paper';
-import { setIsLoggedIn } from '../../utils/dev';
+import { useAuth } from '../../context/AuthContext';
 
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-
-  const handleLogin = () => {
-    setIsLoggedIn(true)
-    navigation.navigate("App")
+  const {onLogin, onRegister} = useAuth();
+  /*
+  const handleLogin = async () => {
+    try {
+      const response = await axios.get('https://64837b0bf2e76ae1b95c8b2a.mockapi.io/Token/1');
+      const token = response.data.token;
+      // Store the JWT token in Expo SecureStore
+      await SecureStore.setItemAsync('jwtToken', token);
+      // Navigate to the AppNavigator or any other screen
+      navigation.navigate('App');
+    } catch (error) {
+      // Handle login error
+      Alert.alert('Login Failed', 'Invalid email or password');
+    }
   };
-
+*/
+  const handleLogin = async () => {
+    const result = await onLogin(email,password);
+    if(result && result.error){
+      alert(result.msg);
+    };
+  }
+  const continueAsGuest = ()=>{
+    navigation.navigate('App')
+  }
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
@@ -58,12 +77,21 @@ const LoginScreen = ({ navigation }) => {
 
           <Button
             icon="login"
-            mode='contained-tonal'
+            mode='contained'
             onPress={handleLogin}
             style={styles.button}
 
           >
             Login
+          </Button>
+          <Button
+            icon="login"
+            mode='contained'
+            onPress={continueAsGuest}
+            style={styles.button}
+
+          >
+            continuar como invitado
           </Button>
           <View style={styles.footer}>
             <Text style={styles.footerText}>

@@ -7,18 +7,24 @@ import { useNavigation } from '@react-navigation/native';
 const SiteList = () => {
   const { sites } = useContext(SiteContext);
   const navigation = useNavigation();
+
+  const handleSitePress = (siteId) => {
+    const site = sites.find((s) => s.id === siteId);
+    navigation.navigate('DetailSite', { site });
+  };
+
   const renderItem = ({ item }) => (
     <SiteCard site={item} onPress={handleSitePress} navigation={navigation} />
   );
 
-  const handleSitePress = (site) => {
-    navigation.navigate('DetailSite', { site });
+  const keyExtractor = (item) => {
+    return item.id.toString(); // Assuming DestinoTuristicoID is a string or can be converted to a string
   };
 
   return (
     <FlatList
       data={sites}
-      keyExtractor={(item) => item.SitioTuristicoID}
+      keyExtractor={keyExtractor}
       renderItem={renderItem}
     />
   );

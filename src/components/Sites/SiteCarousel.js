@@ -1,17 +1,33 @@
-import React, { useContext } from 'react';
-import {StyleSheet, Dimensions } from 'react-native';
+import React from 'react';
+import { StyleSheet, Dimensions, View, ActivityIndicator } from 'react-native';
 import Carousel from 'react-native-reanimated-carousel';
-import { SiteContext } from '../../context/SiteContext';
 import SiteCard from './SiteCard';
 
-const SiteCarousel = ({ navigation }) => {
+const SiteCarousel = ({ navigation, sites, isLoading }) => {
   const width = Dimensions.get('window').width;
-  const { sites } = useContext(SiteContext);
 
-  const handleSiteDetail = (site) => {
+  const handleSiteDetail = (siteId) => {
+    const site = sites.find((s) => s.id === siteId);
     navigation.navigate('DetailSite', { site });
   };
-  
+
+  if (isLoading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="gray" />
+      </View>
+    );
+  }
+
+  const renderSiteCard = ({ item: site }) => {
+    return (
+      <SiteCard
+        site={site}
+        navigation={navigation}
+        onPress={handleSiteDetail}
+      />
+    );
+  };
 
   return (
     <Carousel
@@ -20,51 +36,27 @@ const SiteCarousel = ({ navigation }) => {
         activeOffsetX: [-10, 10],
       }}
       height={width}
-      autoPlay={false}
+      autoPlay={true}
+      autoPlayInterval={1000}
+      loop={false}
       data={sites}
-      scrollAnimationDuration={100}
+      scrollAnimationDuration={1000}
       mode="parallax"
       modeConfig={{
         parallaxScrollingScale: 0.9,
         parallaxScrollingOffset: 100,
       }}
-      renderItem={({ item: site }) => {
-        return (
-          <SiteCard site={site} navigation={navigation} onPress={handleSiteDetail}/>
-        );
-      }}
+      renderItem={renderSiteCard}
     />
   );
 };
 
 const styles = StyleSheet.create({
-  carouselItem: {
+  loadingContainer: {
     flex: 1,
-    borderWidth: 1,
-    borderRadius: 8,
-    marginVertical: 16,
-    marginHorizontal: 8,
-    backgroundColor: 'white',
-    elevation: 4,
-    height:'100%'
-  },
-  image: {
-    width: '100%',
-    height: '60%',
-    resizeMode: 'cover',
-  },
-  contentContainer: {
-    flex: 1,
-    padding: 16,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  description: {
-    fontSize: 16,
-    color: 'gray',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: Dimensions.get('window').width,
   },
 });
 

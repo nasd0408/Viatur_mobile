@@ -5,7 +5,7 @@ import { Button } from 'react-native-paper';
 import CommentSection from '../components/CommentSection/CommentSection';
 
 const DetailSiteScreen = ({ route, navigation }) => {
-  const { site } = route.params;
+  const { item:site } = route.params;
 
   const handleGoBack = () => {
     navigation.goBack();
@@ -50,11 +50,10 @@ const DetailSiteScreen = ({ route, navigation }) => {
         <Text style={styles.label}>Gastronomy:</Text>
         <Text style={styles.value}>{site.Gstronomia}</Text>
 
-        
         <Text style={styles.label}>Tourist Destination ID:</Text>
-        <Text style={styles.value}>{site.DestinoTuristicoID}</Text>
+        <Text style={styles.value}>{site.id}</Text>
 
-        <CommentSection siteId={site.DestinoTuristicoID}/>
+        <CommentSection siteId={site.id}/>
       </View>
 
       <Button onPress={handleGoBack} style={styles.button}>
@@ -95,7 +94,7 @@ const styles = StyleSheet.create({
     marginTop: 24,
     alignSelf: 'center',
     paddingHorizontal: 24,
-    marginBottom:24,
+    marginBottom: 24,
   },
 });
 

@@ -1,41 +1,28 @@
-import { Image, ImageBackground, StyleSheet, Text, View } from 'react-native';
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
+import { View, Image, ImageBackground, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import { Paragraph } from 'react-native-paper';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { TouchableOpacity } from 'react-native-gesture-handler';
-import ColorScheme from '../../utils/ColorScheme';
-import {isLoggedIn, setIsLoggedIn} from '../../utils/dev'
 import { useNavigation } from '@react-navigation/native';
+import ColorScheme from '../../utils/ColorScheme';
 import { user } from '../../utils/dev';
+import { useAuth } from '../../context/AuthContext';
 
 const CustomDrawer = (props) => {
-  const colors = ColorScheme;
-  const navigation = useNavigation()
+  const navigation = useNavigation();
+  const {onLogout, authState} = useAuth();
   const handleLogin = () => {
     navigation.navigate('AuthFlow');
   };
-  const handleLogout = () =>{
-    setIsLoggedIn(false);
 
-  }
-
+ 
   return (
-    <View style={{ flex: 1, backgroundColor: colors.OffWhite }}>
-      <DrawerContentScrollView
-        {...props}
-        contentContainerStyle={{ backgroundColor: colors.Secondary }}
-      >
-        <ImageBackground
-          source={require('../../../assets/menu-bg-blue.jpg')}
-          style={{ padding: 20 }}
-        >
-          {isLoggedIn ? (
+    <View style={styles.container}>
+      <DrawerContentScrollView {...props} contentContainerStyle={styles.drawerContentContainer}>
+        <ImageBackground source={require('../../../assets/menu-bg-blue.jpg')} style={styles.imageBackground}>
+          {authState?.authenticated ? (
             <View style={styles.profileContainer}>
-              <Image
-                source={{uri: user.FotoDePerfil}} // Replace with the appropriate user data
-                style={styles.profileImage}
-              />
+              <Image source={{ uri: user.FotoDePerfil }} style={styles.profileImage} />
               <Paragraph style={styles.userName}>{user.Nombre + ' ' + user.Apellido}</Paragraph>
             </View>
           ) : (
@@ -58,7 +45,7 @@ const CustomDrawer = (props) => {
             <Text style={styles.bottomOptionsText}>Comparte con un amigo</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={handleLogout} style={styles.touchableOpacities}>
+        <TouchableOpacity onPress={onLogout} style={styles.touchableOpacities}>
           <View style={styles.bottomOptionsContainer}>
             <Ionicons name="exit-outline" size={22} />
             <Text style={styles.bottomOptionsText}>Salir</Text>
@@ -69,8 +56,17 @@ const CustomDrawer = (props) => {
   );
 };
 
-
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: ColorScheme.OffWhite,
+  },
+  drawerContentContainer: {
+    backgroundColor: ColorScheme.Secondary,
+  },
+  imageBackground: {
+    padding: 20,
+  },
   profileContainer: {
     flexDirection: 'column',
     alignItems: 'center',
@@ -83,9 +79,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   userName: {
-    color: colors.OffWhite,
+    color: ColorScheme.OffWhite,
     fontSize: 18,
-    backgroundColor: colors.Secondary,
+    backgroundColor: ColorScheme.Secondary,
     borderRadius: 50,
     textAlign: 'center',
     padding: 10,
@@ -102,7 +98,7 @@ const styles = StyleSheet.create({
   drawerItemListContainer: {
     flex: 1,
     paddingTop: 10,
-    backgroundColor: colors.OffWhite,
+    backgroundColor: ColorScheme.OffWhite,
   },
   bottomElementsContainer: {
     padding: 20,

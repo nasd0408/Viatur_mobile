@@ -1,13 +1,14 @@
-import { StyleSheet } from 'react-native';
+import { Dimensions, StyleSheet } from 'react-native';
 import colors from '../utils/ColorScheme';
 
 const styles = StyleSheet.create({
   container: {},
   welcomeContainer: {
-    backgroundColor: colors.Cambridge,
     paddingVertical: 40,
     paddingHorizontal: 20,
     alignItems: 'center',
+    height: Dimensions.get('window').height - 100,
+    justifyContent:'center'
   },
   title: {
     fontSize: 24,
@@ -28,10 +29,8 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   comoViajarContainer: {
-    marginHorizontal: 20,
-    marginTop: 20,
     backgroundColor: colors.OffWhite,
-    padding: 10,
+    padding: 30,
     borderRadius: 8,
   },
   comoViajarTitle: {
@@ -48,13 +47,17 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   carouselContainer: {
-    marginTop: 40,
+    paddingTop: 40,
+    backgroundColor:colors.Cambridge,
   },
   carouselTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     marginBottom: 10,
     marginLeft: 10,
+  },
+  overlay: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Adjust the opacity and color as needed
   },
 });
 

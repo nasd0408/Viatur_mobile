@@ -16,8 +16,11 @@ import DetailSiteScreen from '../screens/DetailSiteScreen';
 import CustomDrawer from '../components/navigation/CustomDrawer';
 import CustomHeader from '../components/navigation/CustomHeader';
 
-import {isLoggedIn} from '../utils/dev'
 import SearchScreen from '../screens/SearchScreen';
+import CompanyDetailScreen from '../screens/CompanyDetailScreen';
+import { useAuth } from '../context/AuthContext';
+import GeneralDetailScreen from '../screens/DetailScreen';
+import DetailScreen from '../screens/DetailScreen';
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
@@ -62,17 +65,22 @@ const HomeStack = () => (
 );
 
 const MainStack = () => (
-  <Stack.Navigator screenOptions={{ headerShown: false }}>
-    <Stack.Screen name="HomeStack" component={HomeStack} />
-    <Stack.Screen name="DetailSite" component={DetailSiteScreen} />
+  <Stack.Navigator screenOptions={{  }}>
+    <Stack.Screen name="HomeStack" component={HomeStack} options={{headerShown:false}}/>
+    {/*<Stack.Screen name="DetailSite" component={DetailSiteScreen} />*/}
     <Stack.Screen name="SearchScreen" component={SearchScreen}/>
+    <Stack.Screen name="CompanyDetail" component={CompanyDetailScreen}/>
+    <Stack.Screen name="DetailScreen" component={DetailScreen}/>
+
   </Stack.Navigator>
 );
+
 const AppNavigator = () => {
+  const { authState } = useAuth();
 
   return (
     <Drawer.Navigator
-      drawerContent={(props) => <CustomDrawer {...props} isLoggedIn={isLoggedIn} />}
+      drawerContent={(props) => <CustomDrawer {...props} isLoggedIn={authState?.authenticated} />}
       backBehavior="initialRoute"
       screenOptions={{
         header: () => <CustomHeader />,
@@ -92,7 +100,7 @@ const AppNavigator = () => {
           title: 'Inicio',
         }}
       />
-      {isLoggedIn && (
+      {authState?.authenticated && (
         <Drawer.Screen
           name="Profile"
           component={ProfileScreen}
