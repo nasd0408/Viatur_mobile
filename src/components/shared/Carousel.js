@@ -10,7 +10,7 @@ import { useAuth } from '../../context/AuthContext';
 const GeneralCarousel = ({ navigation, data, isLoading, cardType, onMarkerUpdate }) => {
   const width = Dimensions.get('window').width;
   const [visible, setVisible] = useState(false)
-   const [markerCoordinate, setMarkerCoordinate] = useState({
+  const [markerCoordinate, setMarkerCoordinate] = useState({
     latitude: 0,
     longitude: 0,
   });
@@ -38,22 +38,24 @@ const GeneralCarousel = ({ navigation, data, isLoading, cardType, onMarkerUpdate
       </View>
     );
   }
-  const handleOnSnap = (index)=>{
-    if (cardType=== 'sites'){
-    const selectedItem = data[index];
-    setMarkerCoordinate({
-      latitud: selectedItem.latitud,
-      longitud: selectedItem.longitud,
-    });
-    onMarkerUpdate(markerCoordinate)
-    console.log(selectedItem.nombre);
+  const handleOnSnap = (index) => {
+    console.log(index);
+    if (cardType === 'sites') {
+      const selectedItem = data[index];
+      setMarkerCoordinate({
+        latitud: selectedItem.latitud,
+        longitud: selectedItem.longitud,
+      });
+      onMarkerUpdate(markerCoordinate)
+      console.log(markerCoordinate);
+    }
+    else {
+      console.log('not a site');
+    }
   }
-  else{
-    console.log('not a site');
-  }
-}
   const renderCard = ({ item }) => {
     if (cardType === 'sites') {
+
       return (
         <SiteCard
           site={item}
@@ -92,22 +94,21 @@ const GeneralCarousel = ({ navigation, data, isLoading, cardType, onMarkerUpdate
           parallaxScrollingOffset: 100,
         }}
         renderItem={renderCard}
-        onSnapToItem={(index)=>handleOnSnap(index)}
-      />
+        onScrollEnd={(index)=>handleOnSnap(index)}
+/>
       <Portal>
-
-      <Snackbar
-        visible={visible}
-        onDismiss={()=> setVisible(false)}
-        action={{
-          label: 'Iniciar sesion',
-          onPress: () => {
-            navigation.navigate('AuthFlow')
-          },
-        }}>
-        Para ver detalles, inicia sesion
-      </Snackbar>
-          </Portal>
+        <Snackbar
+          visible={visible}
+          onDismiss={() => setVisible(false)}
+          action={{
+            label: 'Iniciar sesion',
+            onPress: () => {
+              navigation.navigate('AuthFlow')
+            },
+          }}>
+          Para ver detalles, inicia sesion
+        </Snackbar>
+      </Portal>
     </>
   );
 };
