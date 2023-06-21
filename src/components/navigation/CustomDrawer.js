@@ -45,12 +45,13 @@ const CustomDrawer = (props) => {
             <Text style={styles.bottomOptionsText}>Comparte con un amigo</Text>
           </View>
         </TouchableOpacity>
+        {authState.authenticated &&
         <TouchableOpacity onPress={onLogout} style={styles.touchableOpacities}>
           <View style={styles.bottomOptionsContainer}>
             <Ionicons name="exit-outline" size={22} />
             <Text style={styles.bottomOptionsText}>Salir</Text>
           </View>
-        </TouchableOpacity>
+        </TouchableOpacity>}
       </View>
     </View>
   );

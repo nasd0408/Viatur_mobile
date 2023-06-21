@@ -1,22 +1,35 @@
-import React from 'react';
-import { Card, Title, Paragraph, TouchableRipple } from 'react-native-paper';
+import React, { useContext } from 'react';
+import { Card, Title, Paragraph, TouchableRipple, Button } from 'react-native-paper';
+import { SiteContext } from '../../context/SiteContext';
+import { ServicioTuristicoContext } from '../../context/ServiciosContext';
 
 const ServicioTuristicoCard = ({ servicioTuristico, navigation, onPress }) => {
-  const { id, nombre, descripcion, foto, tipo } = servicioTuristico;
+  const {id, destinoId, nombre, descripción } = servicioTuristico;
 
   const handleCardPress = () => {
     onPress(id)
   };
+  const { galeria } = useContext(ServicioTuristicoContext);
+
+ 
+  const findImageForService = (servicioId) => {
+    const image = galeria.find((img) => img.serviciosId === servicioId);
+    return image ? image.url : "https://source.unsplash.com/random";
+  };
+
+  const siteImage = findImageForService(id);
 
   return (
     <TouchableRipple onPress={handleCardPress}>
       <Card>
-        <Card.Cover source={{ uri: foto }} />
+      {siteImage && <Card.Cover source={{ uri: siteImage }} />}
         <Card.Content>
           <Title>{nombre}</Title>
-          <Paragraph>{descripcion}</Paragraph>
-          <Paragraph>Tipo: {tipo}</Paragraph>
+          <Paragraph>{descripción}</Paragraph>
         </Card.Content>
+        <Card.Actions>
+        <Button onPress={handleCardPress}>Detalles</Button>
+      </Card.Actions>
       </Card>
     </TouchableRipple>
   );

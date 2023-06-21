@@ -1,63 +1,85 @@
-import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import React, { useContext } from 'react';
+import { View, Image, StyleSheet } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import { Button } from 'react-native-paper';
+import { Button, Text, ActivityIndicator } from 'react-native-paper';
 import CommentSection from '../components/CommentSection/CommentSection';
+import { SiteContext } from '../context/SiteContext';
 
 const DetailSiteScreen = ({ route, navigation }) => {
-  const { item:site } = route.params;
-
+  const { item } = route.params;
   const handleGoBack = () => {
     navigation.goBack();
   };
 
+  if (!item) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator animating={true} />
+      </View>
+    );
+  }
+
+  // Find gallery images matching the site ID
+  const { galeria } = useContext(SiteContext);
+  const siteGalleryImages = galeria.filter((img) => img.destinoId === item.id);
+
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>{site.Nombre}</Text>
-      <Image source={{ uri: site.Foto }} style={styles.image} />
+      <Text  variant='displaySmall' >{item.nombre}</Text>
+      <View style={styles.galleryContainer}>
+        <Text style={styles.label}>Galeria de imagenes </Text>
+        <ScrollView horizontal={true}>
+          {siteGalleryImages.map((photo) => (
+            <Image key={photo.id} source={{ uri: photo.url }} style={styles.galleryImage} />
+          ))}
+        </ScrollView>
+      </View>
 
       <View style={styles.infoContainer}>
-        <Text style={styles.label}>City:</Text>
-        <Text style={styles.value}>{site.Ciudad}</Text>
+        <Text style={styles.label}>Ciudad:</Text>
+        <Text style={styles.value}>{item.ciudad}</Text>
 
-        <Text style={styles.label}>Municipality:</Text>
-        <Text style={styles.value}>{site.Municipio}</Text>
+        <Text style={styles.label}>Municipio:</Text>
+        <Text style={styles.value}>{item.municipio}</Text>
 
-        <Text style={styles.label}>Status:</Text>
-        <Text style={styles.value}>{site.Estado ? 'Active' : 'Inactive'}</Text>
 
-        <Text style={styles.label}>Address:</Text>
-        <Text style={styles.value}>{site.Direccion}</Text>
+        <Text style={styles.label}>Direccion:</Text>
+        <Text style={styles.value}>{item.dirección}</Text>
 
-        <Text style={styles.label}>Description:</Text>
-        <Text style={styles.value}>{site.Descripcion}</Text>
+        <Text style={styles.label}>Descripción:</Text>
+        <Text style={styles.value}>{item.descripción}</Text>
 
-        <Text style={styles.label}>Type:</Text>
-        <Text style={styles.value}>{site.Tipo}</Text>
+        <Text style={styles.label}>Tipo:</Text>
+        <Text style={styles.value}>Aqui ira el tipo</Text>
 
-        <Text style={styles.label}>Category:</Text>
-        <Text style={styles.value}>{site.Categoria}</Text>
+        <Text style={styles.label}>Categoria:</Text>
+        <Text style={styles.value}>Aqui ira la categoria</Text>
 
-        <Text style={styles.label}>Schedule:</Text>
-        <Text style={styles.value}>{site.Horario}</Text>
 
-        <Text style={styles.label}>Best Time to Visit:</Text>
-        <Text style={styles.value}>{site.MejorEpoca}</Text>
+        <Text style={styles.label}>Horario:</Text>
+        <Text style={styles.value}>{item.horario}</Text>
 
-        <Text style={styles.label}>Culture and History:</Text>
-        <Text style={styles.value}>{site.HistoriaCultura}</Text>
+        <Text style={styles.label}>Mejor epoca para visitar:</Text>
+        <Text style={styles.value}>{item.mejorEpoca}</Text>
 
-        <Text style={styles.label}>Gastronomy:</Text>
-        <Text style={styles.value}>{site.Gstronomia}</Text>
+        <Text style={styles.label}>Historia y cultura:</Text>
+        <Text style={styles.value}>{item.historiaCultura}</Text>
 
-        <Text style={styles.label}>Tourist Destination ID:</Text>
-        <Text style={styles.value}>{site.id}</Text>
+        <Text style={styles.label}>Gastronomia:</Text>
+        <Text style={styles.value}>{item.gastronomía}</Text>
 
-        <CommentSection siteId={site.id}/>
+
+
+
+
+        <CommentSection siteId={item.id} />
+
+
+
       </View>
 
       <Button onPress={handleGoBack} style={styles.button}>
-        Go Back
+        Volver
       </Button>
     </ScrollView>
   );
@@ -69,10 +91,16 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#fff',
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 16,
+    marginTop: 16,
   },
   image: {
     width: '100%',
@@ -95,6 +123,15 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     paddingHorizontal: 24,
     marginBottom: 24,
+  },
+  galleryContainer: {
+    marginTop: 16,
+  },
+  galleryImage: {
+    width: 200,
+    height: 150,
+    resizeMode: 'cover',
+    marginRight: 8,
   },
 });
 

@@ -32,7 +32,7 @@ const CommentSection = ({ siteId }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Comments</Text>
+      <Text style={styles.title}>Comentarios</Text>
       {comments.map((comment) => (
         <Card key={comment.createdAt} style={styles.card}>
           <Card.Title

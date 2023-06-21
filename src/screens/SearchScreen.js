@@ -18,21 +18,26 @@ const SearchScreen = () => {
   const handleSearch = () => {
     const filtered = sites.filter(
       (site) =>
-        site.Nombre.toLowerCase().includes(searchText.toLowerCase()) ||
-        site.Tipo.toLowerCase().includes(searchText.toLowerCase())
+        site.nombre.toLowerCase().includes(searchText.toLowerCase()) 
     );
     setFilteredSites(filtered);
   };
 
-  const renderItem = ({ item }) => (
-    <SiteCard site={item} onPress={handleSitePress} navigation={navigation} />
-  );
-
-  const handleSitePress = (siteId) => {
-    const site = sites.find((s) => s.id === siteId);
-    navigation.navigate('DetailSite', { site });
+ 
+  const handleSitePress = (itemId) => {
+    const item = sites.find((item) => item.id === itemId);
+    navigation.navigate('DetailSite', { item });
   };
 
+  const renderItem = ({ item }) => {
+    return (
+      <SiteCard
+        site={item}
+        navigation={navigation}
+        onPress={()=>handleSitePress(item.id)}
+      />
+    );
+  };
   const keyExtractor = (item) => {
     return item.id.toString(); // Assuming id is a string or can be converted to a string
   };
@@ -40,7 +45,7 @@ const SearchScreen = () => {
   return (
     <>
       <Searchbar
-      placeholder='Busca por nombre o tipo'
+      placeholder='Busca por nombre'
       value={searchText}
       onChangeText={setSearchText}
       />
@@ -64,11 +69,7 @@ const SearchScreen = () => {
             label: 'Cultural',
             icon:'cross'
           },
-          {
-            value:'modern',
-            label:'Modern',
-            icon:'laptop'
-          },
+         
         ]}
       />
       <FlatList

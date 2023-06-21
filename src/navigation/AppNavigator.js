@@ -21,6 +21,7 @@ import CompanyDetailScreen from '../screens/CompanyDetailScreen';
 import { useAuth } from '../context/AuthContext';
 import GeneralDetailScreen from '../screens/DetailScreen';
 import DetailScreen from '../screens/DetailScreen';
+import ServiceDetailScreen from '../screens/ServiceDetailScreen';
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
@@ -35,7 +36,7 @@ const HomeStack = () => (
     }}
   >
     <Tab.Screen
-      name="Home"
+      name="Inicio"
       component={HomeScreen}
       options={{
         tabBarIcon: ({ color, size }) => (
@@ -44,7 +45,7 @@ const HomeStack = () => (
       }}
     />
     <Tab.Screen
-      name="Promotions"
+      name="Promociones"
       component={PromotionsScreen}
       options={{
         tabBarIcon: ({ color, size }) => (
@@ -53,7 +54,7 @@ const HomeStack = () => (
       }}
     />
     <Tab.Screen
-      name="Companies"
+      name="Empresas"
       component={TourismCompaniesScreen}
       options={{
         tabBarIcon: ({ color, size }) => (
@@ -65,12 +66,15 @@ const HomeStack = () => (
 );
 
 const MainStack = () => (
-  <Stack.Navigator screenOptions={{  }}>
+  <Stack.Navigator screenOptions={{ headerShown: false }}>
     <Stack.Screen name="HomeStack" component={HomeStack} options={{headerShown:false}}/>
     {/*<Stack.Screen name="DetailSite" component={DetailSiteScreen} />*/}
     <Stack.Screen name="SearchScreen" component={SearchScreen}/>
     <Stack.Screen name="CompanyDetail" component={CompanyDetailScreen}/>
     <Stack.Screen name="DetailScreen" component={DetailScreen}/>
+    <Stack.Screen name='DetailSite' component={DetailSiteScreen}/>
+    <Stack.Screen name='DetailService' component={ServiceDetailScreen}/>
+
 
   </Stack.Navigator>
 );

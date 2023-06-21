@@ -11,7 +11,6 @@ const styles = StyleSheet.create({
     justifyContent:'center'
   },
   title: {
-    fontSize: 24,
     fontWeight: 'bold',
     color: colors.OffWhite,
     marginTop: 20,

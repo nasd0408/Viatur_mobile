@@ -1,100 +1,116 @@
-import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import React, { useContext } from 'react';
+import { View, Image, StyleSheet } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import { Button, Paragraph, ActivityIndicator} from 'react-native-paper';
+import { Button, Text, ActivityIndicator } from 'react-native-paper';
 import CommentSection from '../components/CommentSection/CommentSection';
+import { SiteContext } from '../context/SiteContext';
 
 const DetailScreen = ({ route, navigation }) => {
-    const { item, cardType } = route.params;
-    console.log(item);
-    const handleGoBack = () => {
-      navigation.goBack();
-    };
-  
-    if (!item) {
-      return (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator animating={true} />
-        </View>
-      );
-    }
-  
-    return (
-      <ScrollView style={styles.container}>
-        <Paragraph style={styles.title}>{item.nombre}</Paragraph>
-        <Image source={{ uri: item.foto }} style={styles.image} />
-  
-        <View style={styles.infoContainer}>
-          <Paragraph style={styles.label}>City:</Paragraph>
-          <Paragraph style={styles.value}>{item.ciudad}</Paragraph>
-  
-          <Paragraph style={styles.label}>Municipality:</Paragraph>
-          <Paragraph style={styles.value}>{item.municipio}</Paragraph>
-  
-          {cardType === 'servicios' && (
-            <>
-              <Paragraph style={styles.label}>Location:</Paragraph>
-              <Paragraph style={styles.value}>
-                Latitude: {item.mapaLatitude}, Longitude: {item.mapaLongitude}
-              </Paragraph>
-            </>
-          )}
-  
-          <Paragraph style={styles.label}>Status:</Paragraph>
-          <Paragraph style={styles.value}>{item.estado ? 'Active' : 'Inactive'}</Paragraph>
-  
-          <Paragraph style={styles.label}>Address:</Paragraph>
-          <Paragraph style={styles.value}>{item.direccion}</Paragraph>
-  
-          <Paragraph style={styles.label}>Description:</Paragraph>
-          <Paragraph style={styles.value}>{item.descripcion}</Paragraph>
-  
-          <Paragraph style={styles.label}>Type:</Paragraph>
-          <Paragraph style={styles.value}>{item.tipo}</Paragraph>
-  
-          <Paragraph style={styles.label}>Category:</Paragraph>
-          <Paragraph style={styles.value}>{item.categoria}</Paragraph>
-  
-          {cardType === 'sites' && (
-            <>
-              <Paragraph style={styles.label}>Schedule:</Paragraph>
-              <Paragraph style={styles.value}>{item.horario}</Paragraph>
-  
-              <Paragraph style={styles.label}>Best Time to Visit:</Paragraph>
-              <Paragraph style={styles.value}>{item.mejorEpoca}</Paragraph>
-  
-              <Paragraph style={styles.label}>Culture and History:</Paragraph>
-              <Paragraph style={styles.value}>{item.historiaCultura}</Paragraph>
-  
-              <Paragraph style={styles.label}>Gastronomy:</Paragraph>
-              <Paragraph style={styles.value}>{item.gastronomia}</Paragraph>
-            </>
-          )}
-  
-          <Paragraph style={styles.label}>Tourist Destination ID:</Paragraph>
-          <Paragraph style={styles.value}>{item.id}</Paragraph>
-            {cardType==='sites' && (
-
-                <CommentSection siteId={item.id} />
-            )}
-        </View>
-  
-        <Button onPress={handleGoBack} style={styles.button}>
-          Go Back
-        </Button>
-      </ScrollView>
-    );
+  const { item, cardType } = route.params;
+  const handleGoBack = () => {
+    navigation.goBack();
   };
+
+  if (!item) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator animating={true} />
+      </View>
+    );
+  }
+
+  // Find gallery images matching the site ID
+  const {galeria} = useContext(SiteContext);
+  const siteGalleryImages = galeria.filter((img) => img.destinoId === item.id);
+
+  return (
+    <ScrollView style={styles.container}>
+      <Text style={styles.title}>{item.nombre}</Text>
+      <View style={styles.galleryContainer}>
+          <Text style={styles.label}>Galeria de imagenes </Text>
+          <ScrollView horizontal={true}>
+            {siteGalleryImages.map((photo) => (
+              <Image key={photo.id} source={{ uri: photo.url }} style={styles.galleryImage} />
+            ))}
+          </ScrollView>
+        </View>
+
+      <View style={styles.infoContainer}>
+        <Text style={styles.label}>Ciudad:</Text>
+        <Text style={styles.value}>{item.ciudad}</Text>
+
+        <Text style={styles.label}>Municipio:</Text>
+        <Text style={styles.value}>{item.municipio}</Text>
+
+        {cardType === 'servicios' && (
+          <>
+            <Text style={styles.label}>Ubicacion:</Text>
+            <Text style={styles.value}>
+              Latitud: {item.mapaLatitude}, Longitud: {item.mapaLongitude}
+            </Text>
+          </>
+        )}
+
+        
+        <Text style={styles.label}>Direccion:</Text>
+        <Text style={styles.value}>{item.dirección}</Text>
+
+        <Text style={styles.label}>Descripción:</Text>
+        <Text style={styles.value}>{item.descripción}</Text>
+
+        <Text style={styles.label}>Tipo:</Text>
+        <Text style={styles.value}>Aqui ira el tipo</Text>
+
+        <Text style={styles.label}>Categoria:</Text>
+        <Text style={styles.value}>Aqui ira la categoria</Text>
+
+        {cardType === 'sites' && (
+          <>
+            <Text style={styles.label}>Horario:</Text>
+            <Text style={styles.value}>{item.horario}</Text>
+
+            <Text style={styles.label}>Mejor epoca para visitar:</Text>
+            <Text style={styles.value}>{item.mejorEpoca}</Text>
+
+            <Text style={styles.label}>Historia y cultura:</Text>
+            <Text style={styles.value}>{item.historiaCultura}</Text>
+
+            <Text style={styles.label}>Gastronomia:</Text>
+            <Text style={styles.value}>{item.gastronomía}</Text>
+          </>
+        )}
+
+
+        {cardType === 'sites' && (
+          <CommentSection siteId={item.id} />
+        )}
+
+        
+      </View>
+
+      <Button onPress={handleGoBack} style={styles.button}>
+        Go Back
+      </Button>
+    </ScrollView>
+  );
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
     backgroundColor: '#fff',
   },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 16,
+    marginTop:16,
   },
   image: {
     width: '100%',
@@ -117,6 +133,15 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     paddingHorizontal: 24,
     marginBottom: 24,
+  },
+  galleryContainer: {
+    marginTop: 16,
+  },
+  galleryImage: {
+    width: 200,
+    height: 150,
+    resizeMode: 'cover',
+    marginRight: 8,
   },
 });
 

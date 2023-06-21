@@ -82,7 +82,7 @@ const LoginScreen = ({ navigation }) => {
             style={styles.button}
 
           >
-            Login
+            Iniciar sesión
           </Button>
           <Button
             icon="login"
@@ -91,19 +91,19 @@ const LoginScreen = ({ navigation }) => {
             style={styles.button}
 
           >
-            continuar como invitado
+            Continuar como invitado
           </Button>
           <View style={styles.footer}>
             <Text style={styles.footerText}>
-              Don't have an account?{' '}
+              No tienes una cuenta?{' '}
               <Text style={styles.link} onPress={navigateToSignUp}>
-                Sign Up
+                Registrate!
               </Text>
             </Text>
             <Text style={styles.footerText}>
-              Forgot your password?{' '}
+              Olvidaste tu contraseña?{' '}
               <Text style={styles.link} onPress={navigateToForgotPassword}>
-                Reset Password
+                Reestablecer contraseña
               </Text>
             </Text>
           </View>
