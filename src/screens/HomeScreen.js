@@ -31,7 +31,7 @@ const HomeScreen = ({ navigation }) => {
   const {sites, isLoading: siteLoading, reloadData: reloadSiteData} = useContext(SiteContext);
   const {servicioTuristico, isLoading: servicioLoading, reloadData: reloadServicioData} =useContext(ServicioTuristicoContext)
   const {authState} = useAuth()
-  const [markerCoordinate, setMarkerCoordinate] = useState({}); // Latitud y longitud inicial del marcador
+  const [markerCoordinate, setMarkerCoordinate] = useState({ latitude:  0, longitude: 0 }); // Latitud y longitud inicial del marcador
 
   const initialRegion = {
     latitude: 9.925858,
@@ -51,7 +51,6 @@ const HomeScreen = ({ navigation }) => {
     const longitude = safeParseFloat(longitud);
   
     setMarkerCoordinate({ latitude, longitude });
-    console.log(latitude, longitude);
   };
   const hadleReloadData = () =>{
     reloadSiteData();
@@ -68,11 +67,6 @@ const HomeScreen = ({ navigation }) => {
       clearInterval(interval);
     };
   }, []);
-
-  useEffect(() => {
-    handleMarkerUpdate({ latitude:  9.925858, longitude: -69.429599 })
-  }, [])
-  
 
   return (
     <ScrollView style={styles.container}>

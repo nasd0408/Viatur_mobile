@@ -63,7 +63,7 @@ export const AuthProvider = ({ children }) => {
 
     setAuthState({
       token: null,
-      authenticated: false,
+      authenticated: null,
     });
 
     // Reload the data once the user is logged out
