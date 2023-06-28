@@ -41,7 +41,7 @@ export default StyleSheet.create({
     color: '#fff', // Adjust the text color for better visibility
   },
   link: {
-    color: '#007BFF',
+    color: 'blue',
     fontWeight: 'bold',
   },
 });

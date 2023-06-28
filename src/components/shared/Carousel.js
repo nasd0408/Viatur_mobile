@@ -10,10 +10,6 @@ import { useAuth } from '../../context/AuthContext';
 const GeneralCarousel = ({ navigation, data, isLoading, cardType, onMarkerUpdate }) => {
   const width = Dimensions.get('window').width;
   const [visible, setVisible] = useState(false)
-  const [markerCoordinate, setMarkerCoordinate] = useState({
-    latitude: 0,
-    longitude: 0,
-  });
   const { authState } = useAuth();
 
   const handleClickDetail = (itemId, cardType) => {
@@ -42,12 +38,10 @@ const GeneralCarousel = ({ navigation, data, isLoading, cardType, onMarkerUpdate
     console.log(index);
     if (cardType === 'sites') {
       const selectedItem = data[index];
-      setMarkerCoordinate({
+      onMarkerUpdate({
         latitud: selectedItem.latitud,
         longitud: selectedItem.longitud,
       });
-      onMarkerUpdate(markerCoordinate)
-      console.log(markerCoordinate);
     }
     else {
       console.log('not a site');
@@ -94,7 +88,7 @@ const GeneralCarousel = ({ navigation, data, isLoading, cardType, onMarkerUpdate
           parallaxScrollingOffset: 100,
         }}
         renderItem={renderCard}
-        onScrollEnd={(index)=>handleOnSnap(index)}
+        onSnapToItem={(index)=>handleOnSnap(index)}
 />
       <Portal>
         <Snackbar

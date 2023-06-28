@@ -1,62 +1,93 @@
-import { StyleSheet, View } from 'react-native'
-import React, { useState } from 'react'
-import { Button, Divider, Text, TextInput} from 'react-native-paper'
+import React, { useState } from 'react';
+import { View, ImageBackground } from 'react-native';
+import styles from '../../styles/LoginScreenStyles';
+import { Button, Text, TextInput } from 'react-native-paper';
+import { useAuth } from '../../context/AuthContext';
 
-const SignUpScreen = () => {
-  const [username, setUsername] = useState('');
+
+const SignupScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
+  const [nombre, setNombre] = useState('');
+  const [apellido, setApellido] = useState('')
   const [password, setPassword] = useState('');
-  const [step, setStep] = useState(1);
+  const [direccion, setDireccion] = useState('')
+  const [telefono, setTelefono] = useState('')
+  const [fechaNacimiento, setFechaNacimiento] = useState(Date.now)
+  const [sexo, setSexo] = useState('')
+  const [showPassword, setShowPassword] = useState(false);
+  const { onRegister } = useAuth();
 
-  if (step === 1){ 
-    return (
-      <View style={styles.container}>
-        <Text>Paso 1: Datos básicos</Text>
-        <TextInput
-          label="Usuario"
-          value={username}
-          onChangeText={text => setUsername(text)}
-          style={styles.input}
-        />
-        <Divider/>
-        <TextInput
-          label="Email"
-          value={email}
-          onChangeText={text => setEmail(text)}
-          style={styles.input}
-        />
-        <Divider/>
-        <TextInput
-          label="Contraseña"
-          value={password}
-          onChangeText={text => setPassword(text)}
-          secureTextEntry
-          style={styles.input}
-        />
-        <Button mode="contained" onPress={()=> setStep(2)}>
-          Siguiente
-        </Button>
-      </View>
-    )
-}
-  else if (step === 2) {
-    return(
-      <View>
-        <Text> 2</Text>
-        <Button onPress={()=>setStep(1)}>Anterior</Button>
-        <Button onPress={()=>setStep(3)}>Siguiente</Button>
-      </View>
-    )
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
+  const handleRegister = async () => {
+    const result = await onRegister(email, password);
+    if (result && result.error) {
+      alert(result.msg);
+    };
   }
-  else if (step ===3){
-    return(
-    <View>
-        <Text> 3</Text>
-        <Button onPress={()=>setStep(2)}>Anterior</Button>
-      </View>)
-  }
-}
 
-export default SignUpScreen
 
-const styles = StyleSheet.create({})
+
+ 
+
+  return (
+    <ImageBackground
+      source={require('../../../assets/Img/LoginScreenBkg.jpg')}
+      resizeMode='cover'
+      style={styles.backgroundImage}
+    >
+      <View style={styles.overlay} >
+        <View style={styles.container} >
+          <Text style={styles.appName} variant='titleLarge'>Laraventur</Text>
+          <Text style={styles.footerText}>Datos de cuenta </Text>
+          <TextInput
+            style={styles.inputContainer}
+            label="Nombre"
+            value={nombre}
+            onChangeText={text => setNombre(text)}
+            activeUnderlineColor='purple'
+          />
+          <TextInput
+            style={styles.inputContainer}
+            label="Apellido"
+            value={apellido}
+            onChangeText={text => setApellido(text)}
+            activeUnderlineColor='purple'
+          />
+          <TextInput
+            style={styles.inputContainer}
+            label="Email"
+            placeholder='Soyun@ejemplo.com'
+            value={email}
+            onChangeText={text => setEmail(text)}
+            activeUnderlineColor='purple'
+          />
+          <TextInput
+            style={styles.inputContainer}
+
+            label="Contraseña"
+            placeholder='Ejemplo'
+
+            value={password}
+            onChangeText={text => setPassword(text)}
+            activeUnderlineColor='purple'
+            secureTextEntry={!showPassword}
+            right={<TextInput.Icon onPress={togglePasswordVisibility} icon={showPassword ? "eye-off" : "eye"} />}
+          />
+          <Button
+            icon="account-check"
+            mode='contained'
+            onPress={handleRegister}
+          >
+            Registrate!
+          </Button>
+        </View>
+      </View>
+    </ImageBackground>
+  );
+};
+
+export default SignupScreen;

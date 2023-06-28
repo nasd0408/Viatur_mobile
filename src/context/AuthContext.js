@@ -35,6 +35,13 @@ export const AuthProvider = ({ children }) => {
     loadToken();
   }, []);
 
+  const register = async (email, password) => {
+    try {
+      return await axios.post(`${API_URL}/users`, { email, password });
+    } catch (e) {
+      return { error: true, msg: e.response.data.msg };
+    }
+  };
   const login = async (email, password) => {
     try {
       const result = await axios.post(`${API_URL}/auth`, { email, password });
@@ -71,6 +78,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const value = {
+    onRegister: register,
     onLogin: login,
     onLogout: logout,
     authState
