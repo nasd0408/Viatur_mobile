@@ -1,18 +1,23 @@
 import React from "react";
 import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
 import { user } from "../utils/dev";
+import { TextInput } from 'react-native-paper';
+import { DrawerContentScrollView } from '@react-navigation/drawer';
 
-const ProfileScreen = ({ navigation }) => {
-  const handleEditProfile = () => {
-    console.log("handleEditProfile")
-    navigation.navigate('Edit', {user});
+const EditProfile = ({navigation, route, props}) => {
+  const [text, setText] = React.useState("");
+  const {user} = route.params;
+  console.log(user);
+
+  const handleBackProfile = () => {
+    navigation.navigate('Profile');
   }
-  
+
   return (
-    <View style={styles.container}>
+    <DrawerContentScrollView {...props} contentContainerStyle={styles.drawerContentContainer}>
       <Image style={styles.profileImage} source={{ uri: user.FotoDePerfil }} />
       <View style={styles.separator} />
-      <Text style={styles.name}>{`${user.Nombre} ${user.Apellido}`}</Text>
+      <TextInput style={styles.name}>{`${user.Nombre} ${user.Apellido}`}</TextInput>
       <View style={styles.separator} />
       <View style={styles.row}>
         <Text style={styles.label}> ID: </Text>
@@ -24,15 +29,15 @@ const ProfileScreen = ({ navigation }) => {
       </View>
       <View style={styles.row}>
         <Text style={styles.label}> Address: </Text>
-        <Text style={styles.text}>{user.Direccion}</Text>
+        <TextInput style={styles.text}>{user.Direccion}</TextInput>
       </View>
       <View style={styles.row}>
         <Text style={styles.label}> Phone: </Text>
-        <Text style={styles.text}>{user.Telefono}</Text>
+        <TextInput style={styles.text}>{user.Telefono}</TextInput>
       </View>
       <View style={styles.row}>
         <Text style={styles.label}> Date of Birth: </Text>
-        <Text style={styles.text}>{user.FechaDeNacimiento}</Text>
+        <TextInput style={styles.text}>{user.FechaDeNacimiento}</TextInput>
       </View>
       <View style={styles.row}>
         <Text style={styles.label}> Registration Date: </Text>
@@ -40,16 +45,24 @@ const ProfileScreen = ({ navigation }) => {
       </View>
       <View style={styles.row}>
         <Text style={styles.label}> Status: </Text>
-        <Text style={styles.text}>{user.Estado}</Text>
+        <TextInput style={styles.text}>{user.Estado}</TextInput>
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.label}> Password: </Text>
+        <TextInput style={styles.text}> Password </TextInput>
+      </View>
+      <View style={styles.row}>
+        <Text style={styles.label}> New Password: </Text>
+        <TextInput style={styles.text}> New Password </TextInput>
       </View>
       <View style={styles.separator} />
       <View style={styles.buttonContainer}>
-      <TouchableOpacity style={styles.editButton} onPress={handleEditProfile}>
-          <Text style={styles.editButtonText}>Editar perfil</Text>
+      <TouchableOpacity style={styles.editButton} onPress={handleBackProfile}>
+          <Text style={styles.editButtonText}>Back Profile</Text>
       </TouchableOpacity>
       </View>
       <View style={styles.separator} />
-    </View>
+      </DrawerContentScrollView>
   );
 };
 
@@ -91,6 +104,9 @@ const styles = StyleSheet.create({
     width: "100%",
     marginBottom: 10,
   },
+  TextInput: {
+    
+  },
   buttonContainer: {
     marginTop: 0,
     alignItems: "center",
@@ -113,5 +129,4 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   }
 });
-
-export default ProfileScreen;
+export default EditProfile;
