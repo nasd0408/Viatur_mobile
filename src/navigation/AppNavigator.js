@@ -10,6 +10,7 @@ import HomeScreen from '../screens/HomeScreen';
 import PromotionsScreen from '../screens/PromotionsScreen';
 import TourismCompaniesScreen from '../screens/TourismCompaniesScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import EditProfile from '../screens/EditProfile';
 import NotificationsScreen from '../screens/NotificationsScreen';
 import DetailSiteScreen from '../screens/DetailSiteScreen';
 
@@ -74,6 +75,7 @@ const MainStack = () => (
     <Stack.Screen name="DetailScreen" component={DetailScreen}/>
     <Stack.Screen name='DetailSite' component={DetailSiteScreen}/>
     <Stack.Screen name='DetailService' component={ServiceDetailScreen}/>
+    <Stack.Screen name="Edit" component={EditProfile}/>
 
 
   </Stack.Navigator>
