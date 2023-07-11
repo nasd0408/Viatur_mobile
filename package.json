@@ -12,6 +12,7 @@
     "@react-native-community/datetimepicker": "6.7.3",
     "@react-navigation/bottom-tabs": "^6.5.7",
     "@react-navigation/drawer": "^6.6.2",
+    "@react-navigation/material-top-tabs": "^6.6.3",
     "@react-navigation/native": "^6.1.6",
     "@react-navigation/stack": "^6.3.16",
     "@reduxjs/toolkit": "^1.9.5",
@@ -31,7 +32,10 @@
     "react-native-paper": "^5.8.0",
     "react-native-reanimated": "~2.14.4",
     "react-native-reanimated-carousel": "^3.3.2",
-    "react-redux": "^8.0.7"
+    "react-native-tab-view": "^3.5.2",
+    "react-redux": "^8.0.7",
+    "react-native-pager-view": "6.1.2",
+    "expo-image-picker": "~14.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

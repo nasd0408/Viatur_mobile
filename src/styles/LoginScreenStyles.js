@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import ColorScheme from '../utils/ColorScheme';
 
 export default StyleSheet.create({
   container: {
@@ -43,5 +44,44 @@ export default StyleSheet.create({
   link: {
     color: 'blue',
     fontWeight: 'bold',
+  },
+  modalContainer: {
+    backgroundColor: 'white',
+    padding: 20,
+  },
+  modalTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  chipGroup: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'flex-start',
+  },
+  chip: {
+    margin: 4,
+  },
+  categoryName: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginTop: 16,
+    marginLeft: 16,
+    color:ColorScheme.OffWhite
+  },
+  chipsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginTop: 8,
+    marginLeft: 16,
+    marginRight: 16,
+  },
+  chip: {
+    marginRight: 8,
+    marginBottom: 8,
+  },
+  divider: {
+    marginHorizontal: 16,
+    marginBottom: 16,
   },
 });

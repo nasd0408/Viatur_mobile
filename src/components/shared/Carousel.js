@@ -35,16 +35,12 @@ const GeneralCarousel = ({ navigation, data, isLoading, cardType, onMarkerUpdate
     );
   }
   const handleOnSnap = (index) => {
-    console.log(index);
     if (cardType === 'sites') {
       const selectedItem = data[index];
       onMarkerUpdate({
         latitud: selectedItem.latitud,
         longitud: selectedItem.longitud,
       });
-    }
-    else {
-      console.log('not a site');
     }
   }
   const renderCard = ({ item }) => {
