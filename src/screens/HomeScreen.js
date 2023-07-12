@@ -10,6 +10,9 @@ import GeneralCarousel from '../components/shared/Carousel';
 import { ServicioTuristicoContext } from '../context/ServiciosContext';
 import { useAuth } from '../context/AuthContext';
 import MapView, { Marker }from 'react-native-maps';
+import { PromocionContext } from '../context/PromocionContext';
+import { RutasContext } from '../context/RutasContext';
+import ListaRutas from '../components/Rutas/ListaRutas';
 
 
 
@@ -30,14 +33,16 @@ const HomeScreen = ({ navigation }) => {
   ];
   const {sites, isLoading: siteLoading, reloadData: reloadSiteData} = useContext(SiteContext);
   const {servicioTuristico, isLoading: servicioLoading, reloadData: reloadServicioData} =useContext(ServicioTuristicoContext)
+  const {promociones, isLoading: promocionesLoading, reloadData: reloadPromocionesData} =useContext(PromocionContext)
+  const {rutas, isLoading: rutasLoading, reloadData: reloadRutassData} =useContext(RutasContext)
   const {authState} = useAuth()
   const [markerCoordinate, setMarkerCoordinate] = useState({ latitude:  0, longitude: 0 }); // Latitud y longitud inicial del marcador
 
   const initialRegion = {
     latitude: 9.925858,
     longitude: -69.429599,
-    latitudeDelta: 0.7,
-    longitudeDelta: 0.7,};
+    latitudeDelta: 2,
+    longitudeDelta: 2,};
 
   const safeParseFloat = (str) => {
     const value = parseFloat(str);
@@ -55,6 +60,7 @@ const HomeScreen = ({ navigation }) => {
   const hadleReloadData = () =>{
     reloadSiteData();
     reloadServicioData();
+    reloadPromocionesData();
   }
   useEffect(() => {
     const interval = setInterval(() => {
@@ -72,7 +78,6 @@ const HomeScreen = ({ navigation }) => {
     <ScrollView style={styles.container}>
       <ImageBackground  source={imageSources[imageIndex]}>
         <View style={styles.overlay}>
-
       <View style={styles.welcomeContainer}>
         <Ionicons name='leaf-outline' size={50} color={colors.OffWhite}/>
         <Text style={styles.title}  variant='displaySmall'>Bienvenido a LARAVENTUR</Text>
@@ -117,10 +122,15 @@ const HomeScreen = ({ navigation }) => {
         <Text style={styles.carouselTitle}>Nuestros afiliados te ofrencen los siguientes servicios</Text>
         <GeneralCarousel navigation={navigation} cardType={'servicios'} data={servicioTuristico} isLoading={servicioLoading} /> 
       </View>
+      <View style={styles.comoViajarContainer}>
+
+      <Text style={styles.carouselTitle}>Nuestras rutas recomendadas</Text>
+      <ListaRutas rutas={rutas} navigation={navigation}></ListaRutas>
+      </View>
       {authState.authenticated?
       <View style={styles.carouselContainer}>
         <Text style={styles.carouselTitle}>Aprovecha nuestras promociones!</Text>
-        <GeneralCarousel navigation={navigation} cardType={'servicios'} data={servicioTuristico} isLoading={servicioLoading} /> 
+        <GeneralCarousel navigation={navigation} cardType={'promocion'} data={promociones} isLoading={promocionesLoading} /> 
       </View>:
       <View  style={styles.comoViajarContainer}>
         <Text style={styles.comoViajarTitle}>Inicia Sesion para ver las promociones disponibles</Text>

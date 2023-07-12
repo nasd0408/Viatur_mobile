@@ -58,10 +58,10 @@ const LoginScreen = ({ navigation }) => {
           <TextInput
             style={styles.inputContainer}
             label="Email"
-            placeholder='Soyun@ejemplo.com'
             value={email}
             onChangeText={text => setEmail(text)}
             activeUnderlineColor='purple'
+            keyboardType='email-address'
           />
           <TextInput
             style={styles.inputContainer}

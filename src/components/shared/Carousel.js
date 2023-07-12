@@ -6,6 +6,7 @@ import SiteCard from '../Sites/SiteCard';
 import { ActivityIndicator, Portal, Snackbar } from 'react-native-paper';
 import ServicioTuristicoCard from '../Servicios/ServiciosCard';
 import { useAuth } from '../../context/AuthContext';
+import PromocionesCard from '../Promociones/PromocionesCard';
 
 const GeneralCarousel = ({ navigation, data, isLoading, cardType, onMarkerUpdate }) => {
   const width = Dimensions.get('window').width;
@@ -22,6 +23,8 @@ const GeneralCarousel = ({ navigation, data, isLoading, cardType, onMarkerUpdate
         navigation.navigate('DetailScreen', { item, cardType });
       } else if (cardType === 'servicios') {
         navigation.navigate('DetailService', { item, cardType });
+      }else if (cardType === 'promocion'){
+        navigation.navigate('DetailPromocion',{ item, cardType})
       }
     }
   }
@@ -61,6 +64,14 @@ const GeneralCarousel = ({ navigation, data, isLoading, cardType, onMarkerUpdate
           onPress={() => handleClickDetail(item.id, cardType)}
         />
       );
+    }else if (cardType ==='promocion'){
+      return (
+        <PromocionesCard
+          promocion={item}
+          navigation={navigation}
+          onPress={()=>handleClickDetail(item.id, cardType)}
+        />
+      )
     }
     return null;
   };

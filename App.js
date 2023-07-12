@@ -5,17 +5,23 @@ import { PaperProvider } from 'react-native-paper';
 import { AuthProvider } from './src/context/AuthContext';
 import { ServicioTuristicoProvider } from './src/context/ServiciosContext';
 import { AppProvider } from './src/context/AppContext';
+import { PromocionProvider } from './src/context/PromocionContext';
+import { RutasProvider } from './src/context/RutasContext';
 
 export default function App() {
   return (
     <PaperProvider>
       <AppProvider>
         <ServicioTuristicoProvider>
-          <SiteProvider>
-            <AuthProvider>
-              <MainNavigator />
-            </AuthProvider>
-          </SiteProvider>
+          <PromocionProvider>
+            <SiteProvider>
+              <RutasProvider>
+                <AuthProvider>
+                  <MainNavigator />
+                </AuthProvider>
+              </RutasProvider>
+            </SiteProvider>
+          </PromocionProvider>
         </ServicioTuristicoProvider>
       </AppProvider>
     </PaperProvider>

@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   carouselContainer: {
-    paddingTop: 40,
+    paddingTop: 10,
     backgroundColor:colors.Cambridge,
   },
   carouselTitle: {

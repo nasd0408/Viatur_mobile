@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, ImageBackground, StatusBar } from 'react-native';
 import styles from '../../styles/LoginScreenStyles';
-import { Button, Text, TextInput, List, Provider, Portal, Modal, RadioButton, Avatar, Chip, Divider } from 'react-native-paper';
+import { Button, Text, TextInput, Provider, Portal, Modal, RadioButton, Avatar, Chip, Divider } from 'react-native-paper';
 import { useAuth } from '../../context/AuthContext';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import DateTimePicker from '@react-native-community/datetimepicker';

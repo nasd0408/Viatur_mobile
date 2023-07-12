@@ -1,6 +1,5 @@
 import React, { useContext } from 'react';
 import { Card, Title, Paragraph, TouchableRipple, Button } from 'react-native-paper';
-import { SiteContext } from '../../context/SiteContext';
 import { ServicioTuristicoContext } from '../../context/ServiciosContext';
 
 const ServicioTuristicoCard = ({ servicioTuristico, navigation, onPress }) => {

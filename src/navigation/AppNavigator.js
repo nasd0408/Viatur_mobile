@@ -23,6 +23,8 @@ import { useAuth } from '../context/AuthContext';
 import GeneralDetailScreen from '../screens/DetailScreen';
 import DetailScreen from '../screens/DetailScreen';
 import ServiceDetailScreen from '../screens/ServiceDetailScreen';
+import PromocionDetail from '../screens/PromocionDetail';
+import DetailRutaScreen from '../screens/DetailRutaScreen';
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
@@ -75,6 +77,8 @@ const MainStack = () => (
     <Stack.Screen name="DetailScreen" component={DetailScreen}/>
     <Stack.Screen name='DetailSite' component={DetailSiteScreen}/>
     <Stack.Screen name='DetailService' component={ServiceDetailScreen}/>
+    <Stack.Screen name='DetailPromocion' component={PromocionDetail}/>
+    <Stack.Screen name='DetailRuta' component={DetailRutaScreen}/>
     <Stack.Screen name="Edit" component={EditProfile}/>
 
 
