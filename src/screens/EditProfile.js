@@ -1,132 +1,233 @@
-import React from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
+import React from 'react';
+import {View, StyleSheet, ScrollView, Text, TextInput, Image, TouchableOpacity} from 'react-native';
+import {FormBuilder} from 'react-native-paper-form-builder';
+import {useForm} from 'react-hook-form';
+import {Button} from 'react-native-paper';
+import {ProfileScreen} from './ProfileScreen'
 import { user } from "../utils/dev";
-import { TextInput } from 'react-native-paper';
 import { DrawerContentScrollView } from '@react-navigation/drawer';
+import { Ionicons } from '@expo/vector-icons';
+import CustomDatePicker from '../components/shared/CustomDatePicker';
 
-const EditProfile = ({navigation, route, props}) => {
-  const [text, setText] = React.useState("");
-  const {user} = route.params;
-  console.log(user);
-
+function EditProfile({navigation}) {
+  const {control, setFocus, handleSubmit, props} = useForm({
+    defaultValues: {
+      email: '',
+      password: '',
+      NewPassword: '',
+      name: '',
+      last: '',
+      address: '',
+      gender: '',
+      phoneNumber: '',
+    },
+    mode: 'onChange',
+  });
+  
   const handleBackProfile = () => {
     navigation.navigate('Profile');
   }
 
   return (
     <DrawerContentScrollView {...props} contentContainerStyle={styles.drawerContentContainer}>
+    <View style={styles.containerStyle}>
+      <ScrollView contentContainerStyle={styles.scrollViewStyle}>
       <Image style={styles.profileImage} source={{ uri: user.FotoDePerfil }} />
-      <View style={styles.separator} />
-      <TextInput style={styles.name}>{`${user.Nombre} ${user.Apellido}`}</TextInput>
-      <View style={styles.separator} />
-      <View style={styles.row}>
-        <Text style={styles.label}> ID: </Text>
-        <Text style={styles.text}>{user.TuristaID}</Text>
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.label}> Username: </Text>
-        <Text style={styles.text}>{user.UsuarioID}</Text>
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.label}> Address: </Text>
-        <TextInput style={styles.text}>{user.Direccion}</TextInput>
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.label}> Phone: </Text>
-        <TextInput style={styles.text}>{user.Telefono}</TextInput>
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.label}> Date of Birth: </Text>
-        <TextInput style={styles.text}>{user.FechaDeNacimiento}</TextInput>
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.label}> Registration Date: </Text>
-        <Text style={styles.text}>{user.FechaDeRegistro}</Text>
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.label}> Status: </Text>
-        <TextInput style={styles.text}>{user.Estado}</TextInput>
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.label}> Password: </Text>
-        <TextInput style={styles.text}> Password </TextInput>
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.label}> New Password: </Text>
-        <TextInput style={styles.text}> New Password </TextInput>
-      </View>
-      <View style={styles.separator} />
-      <View style={styles.buttonContainer}>
+        <Text style={styles.headingStyle}>Editar Perfil</Text>
+        <FormBuilder
+          control={control}
+          setFocus={setFocus}
+          formConfigArray={[
+            {
+              type: 'text',
+              name: 'name',
+
+              rules: {
+                required: {
+                  value: true,
+                  message: 'name is required',
+                },
+              },
+              textInputProps: {
+                label: 'name',
+              },
+            },
+            {
+              type: 'text',
+              name: 'address',
+
+              rules: {
+                required: {
+                  value: true,
+                  message: 'Address is required',
+                },
+              },
+              textInputProps: {
+                label: 'Address',
+              },
+            },
+            {
+              name: 'rememberMe',
+              type: 'custom',
+              JSX: CustomDatePicker,
+            },
+            {
+              type: 'text',
+              name: 'phoneNumber',
+              rules: {
+                required: {
+                  value: true,
+                  message: 'Phone Number is required',
+                },
+                pattern: {
+                  value: /^[0-9]+$/,
+                  message: 'Phone Number should contain only numbers',
+                },
+              },
+              textInputProps: {
+                label: 'Phone Number',
+              },
+            },            
+            {
+              name: 'gender',
+              type: 'select',
+              textInputProps: {
+                label: 'Gender',
+               label: <Ionicons name="chevron-down-outline" size={18} color={colors.black}> Gender </Ionicons>,
+              },
+              rules: {
+                required: {
+                  value: true,
+                  message: 'Gender is required',
+                },
+              },
+              options: [
+                {
+                  value: 0,
+                  label: 'Female',
+                },
+                {
+                  value: 1,
+                  label: 'Male',
+                },
+                {
+                  value: 2,
+                  label: 'Others',
+                },
+              ],
+            },
+            {
+              type: 'text',
+              name: 'last',
+
+              rules: {
+                required: {
+                  value: true,
+                  message: 'Last name is required',
+                },
+              },
+              textInputProps: {
+                label: 'Last name',
+              },
+            },
+            {
+              type: 'password',
+              name: 'Newpassword',
+
+              rules: {
+                required: {
+                  value: true,
+                  message: 'New Password is required',
+                },
+              },
+              textInputProps: {
+                label: 'password',
+              },
+            },
+            {
+              type: 'password',
+              name: 'password',
+              rules: {
+                required: {
+                  value: true,
+                  message: 'Password is required',
+                },
+              },
+              textInputProps: {
+                label: 'New Password',
+              },
+            },
+          ]}
+        />
+         <View style={styles.buttonContainer}>
+        <TouchableOpacity  style={styles.editSubmit}
+          mode={'contained'}
+          onPress={handleSubmit}>
+         <Text style={styles.editButtonText}>Submit</Text> 
+       </TouchableOpacity>
+        </View>
+        <View style={styles.buttonContainer}>
       <TouchableOpacity style={styles.editButton} onPress={handleBackProfile}>
           <Text style={styles.editButtonText}>Back Profile</Text>
       </TouchableOpacity>
       </View>
-      <View style={styles.separator} />
-      </DrawerContentScrollView>
+      </ScrollView>
+    </View>
+    </DrawerContentScrollView>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 20,
-    margin: 20,
-    backgroundColor: "#F5F5F5",
-    paddingBottom: 60,
-  },
-  profileImage: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    marginBottom: 20,
-  },
-  name: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 10,
-    textAlign: "right",
-  },
-  text: {
-    fontSize: 16,
-    marginBottom: 10,
-    textAlign: "left",
-  },
-  separator: {
-    borderBottomColor: "#CCC",
-    borderBottomWidth: 1,
-    width: "100%",
-    marginBottom: 10,
-  },
-  TextInput: {
-    
+  contained: {
+    backgroundColor: colors.Primary
   },
   buttonContainer: {
     marginTop: 0,
     alignItems: "center",
     marginBottom: 5,
   },
+  editSubmit: {
+    backgroundColor: colors.Primary,
+    paddingVertical: 10,
+    paddingHorizontal: 90,
+    borderRadius: 5,
+    marginTop: 5
+  },
   editButton: {
     backgroundColor: colors.Primary,
     paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingHorizontal: 50,
     borderRadius: 5,
+    marginTop: 5
   },
   editButtonText: {
     color: "#fff",
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "bold",
   },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 5,
-  }
+  containerStyle: {
+    flex: 1,
+  },
+  scrollViewStyle: {
+    flex: 1,
+    padding: 15,
+    justifyContent: 'center',
+  },
+  headingStyle: {
+    backgroundColor: colors.Primary,
+    fontSize: 30,
+    textAlign: 'center',
+    marginBottom: 40,
+    color: "#fff",
+    borderRadius: 5,
+  },
+  profileImage: {
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    marginBottom: 20,
+    marginLeft: 90
+  },
 });
+
 export default EditProfile;

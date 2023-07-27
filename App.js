@@ -7,6 +7,10 @@ import { ServicioTuristicoProvider } from './src/context/ServiciosContext';
 import { AppProvider } from './src/context/AppContext';
 import { PromocionProvider } from './src/context/PromocionContext';
 import { RutasProvider } from './src/context/RutasContext';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+
+MaterialCommunityIcons.loadFont();
+
 
 export default function App() {
   return (
