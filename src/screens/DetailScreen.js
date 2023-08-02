@@ -4,14 +4,36 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { Button, Text, ActivityIndicator } from 'react-native-paper';
 import CommentSection from '../components/CommentSection/CommentSection';
 import { SiteContext } from '../context/SiteContext';
+import { useState } from 'react';
+import { useEffect } from 'react';
+import axios from 'axios';
+import { API_BASE_URL } from '../utils/dev';
+
 
 const DetailScreen = ({ route, navigation }) => {
-  const { item, cardType } = route.params;
+  const [destino, setdestino] = useState([])
+  const [loading, setLoading] = useState(true)
+  const { destinoId } = route.params;
+  useEffect(() => {
+    fetchDestinoById();
+  }, []);
+
+  const fetchDestinoById = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/destinos/search/${destinoId}`);
+      setdestino(response.data.data);
+      setLoading(false);
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
+  };
+
   const handleGoBack = () => {
     navigation.goBack();
   };
 
-  if (!item) {
+  if (loading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator animating={true} />
@@ -20,72 +42,70 @@ const DetailScreen = ({ route, navigation }) => {
   }
 
   // Find gallery images matching the site ID
-  const {galeria} = useContext(SiteContext);
-  const siteGalleryImages = galeria.filter((img) => img.destinoId === item.id);
+  const { galeria } = useContext(SiteContext);
+  const siteGalleryImages = galeria.filter((img) => img.destinoId === destino.id);
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>{item.nombre}</Text>
+      <Text style={styles.title}>{destino.nombre}</Text>
       <View style={styles.galleryContainer}>
-          <Text style={styles.label}>Galeria de imagenes </Text>
-          <ScrollView horizontal={true}>
-            {siteGalleryImages.map((photo) => (
-              <Image key={photo.id} source={{ uri: photo.url }} style={styles.galleryImage} />
-            ))}
-          </ScrollView>
-        </View>
+        <Text style={styles.label}>Galeria de imagenes </Text>
+        <ScrollView horizontal={true}>
+          {siteGalleryImages.map((photo) => (
+            <Image key={photo.id} source={{ uri: photo.url }} style={styles.galleryImage} />
+          ))}
+        </ScrollView>
+      </View>
 
       <View style={styles.infoContainer}>
         <Text style={styles.label}>Ciudad:</Text>
-        <Text style={styles.value}>{item.ciudad}</Text>
+        <Text style={styles.value}>{destino.ciudad}</Text>
 
         <Text style={styles.label}>Municipio:</Text>
-        <Text style={styles.value}>{item.municipio}</Text>
+        <Text style={styles.value}>{destino.municipio}</Text>
 
-        {cardType === 'servicios' && (
-          <>
-            <Text style={styles.label}>Ubicacion:</Text>
-            <Text style={styles.value}>
-              Latitud: {item.mapaLatitude}, Longitud: {item.mapaLongitude}
-            </Text>
-          </>
-        )}
-
-        
         <Text style={styles.label}>Direccion:</Text>
-        <Text style={styles.value}>{item.dirección}</Text>
+        <Text style={styles.value}>{destino.direccion}</Text>
 
         <Text style={styles.label}>Descripción:</Text>
-        <Text style={styles.value}>{item.descripción}</Text>
+        <Text style={styles.value}>{destino.descripcion}</Text>
 
-        <Text style={styles.label}>Tipo:</Text>
-        <Text style={styles.value}>Aqui ira el tipo</Text>
-
-        <Text style={styles.label}>Categoria:</Text>
-        <Text style={styles.value}>Aqui ira la categoria</Text>
-
-        {cardType === 'sites' && (
+        {destino.bioma && (
           <>
-            <Text style={styles.label}>Horario:</Text>
-            <Text style={styles.value}>{item.horario}</Text>
-
-            <Text style={styles.label}>Mejor epoca para visitar:</Text>
-            <Text style={styles.value}>{item.mejorEpoca}</Text>
-
-            <Text style={styles.label}>Historia y cultura:</Text>
-            <Text style={styles.value}>{item.historiaCultura}</Text>
-
-            <Text style={styles.label}>Gastronomia:</Text>
-            <Text style={styles.value}>{item.gastronomía}</Text>
+            <Text style={styles.label}>Este lugar se encuentra en:</Text>
+            <Text style={styles.value}>{destino.bioma.descripcion}</Text>
           </>
         )}
 
-
-        {cardType === 'sites' && (
-          <CommentSection siteId={item.id} />
+        {destino.clima && (
+          <>
+            <Text style={styles.label}>Disfruta de un clima:</Text>
+            <Text style={styles.value}>{destino.clima.descripcion}</Text>
+          </>
         )}
 
-        
+        {destino.gastronomia && (
+          <>
+            <Text style={styles.label}>Degusta la deliciosa gastronomía local:</Text>
+            <Text style={styles.value}>{destino.gastronomia.descripcion}</Text>
+          </>
+        )}
+
+        {destino.diversidadBiologica && (
+          <>
+            <Text style={styles.label}>Explora la rica diversidad biológica:</Text>
+            <Text style={styles.value}>{destino.diversidadBiologica.descripcion}</Text>
+          </>
+        )}
+
+        {destino.temporadas && (
+          <>
+            <Text style={styles.label}>Visita en la temporada:</Text>
+            <Text style={styles.value}>{destino.temporadas.descripcion}</Text>
+          </>
+        )}
+
+        <CommentSection siteId={destino.id} />
       </View>
 
       <Button onPress={handleGoBack} style={styles.button}>
@@ -110,7 +130,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 16,
-    marginTop:16,
+    marginTop: 16,
   },
   image: {
     width: '100%',

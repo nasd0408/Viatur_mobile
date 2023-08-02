@@ -20,8 +20,9 @@ const SiteList = () => {
       setVisible(!visible)
     }
     else{
-    const item = sites.find((item) => item.id === itemId);
-    navigation.navigate('DetailSite', { item });
+    
+      
+        navigation.navigate('DetailScreen', { destinoId:itemId, cardType:"sites" });
     }
   };
 

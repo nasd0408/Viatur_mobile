@@ -48,11 +48,11 @@ const HomeStack = () => (
       }}
     />
     <Tab.Screen
-      name="Promociones"
+      name="Sitios"
       component={PromotionsScreen}
       options={{
         tabBarIcon: ({ color, size }) => (
-          <Icon name="local-offer" type="material" color={color} size={size} />
+          <Icon name="nature" type="material" color={color} size={size} />
         ),
       }}
     />

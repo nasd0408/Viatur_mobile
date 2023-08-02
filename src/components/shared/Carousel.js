@@ -1,34 +1,32 @@
 import React, { useState } from 'react';
 import { StyleSheet, Dimensions, View } from 'react-native';
+import { ActivityIndicator, Portal, Snackbar, Text } from 'react-native-paper';
 
 import Carousel from 'react-native-reanimated-carousel';
 import SiteCard from '../Sites/SiteCard';
-import { ActivityIndicator, Portal, Snackbar } from 'react-native-paper';
 import ServicioTuristicoCard from '../Servicios/ServiciosCard';
 import { useAuth } from '../../context/AuthContext';
 import PromocionesCard from '../Promociones/PromocionesCard';
 
 const GeneralCarousel = ({ navigation, data, isLoading, cardType, onMarkerUpdate }) => {
   const width = Dimensions.get('window').width;
-  const [visible, setVisible] = useState(false)
+  const [visible, setVisible] = useState(false);
   const { authState } = useAuth();
 
   const handleClickDetail = (itemId, cardType) => {
     const item = data.find((item) => item.id === itemId);
     if (authState.authenticated === null) {
-      setVisible(!visible)
-    }
-    else {
+      setVisible(!visible);
+    } else {
       if (cardType === 'sites') {
-        navigation.navigate('DetailScreen', { item, cardType });
+        navigation.navigate('DetailScreen', { destinoId:itemId , cardType });
       } else if (cardType === 'servicios') {
         navigation.navigate('DetailService', { item, cardType });
-      }else if (cardType === 'promocion'){
-        navigation.navigate('DetailPromocion',{ item, cardType})
+      } else if (cardType === 'promocion') {
+        navigation.navigate('DetailPromocion', { item, cardType });
       }
     }
-  }
-    ;
+  };
 
   if (isLoading) {
     return (
@@ -37,6 +35,7 @@ const GeneralCarousel = ({ navigation, data, isLoading, cardType, onMarkerUpdate
       </View>
     );
   }
+
   const handleOnSnap = (index) => {
     if (cardType === 'sites') {
       const selectedItem = data[index];
@@ -45,10 +44,10 @@ const GeneralCarousel = ({ navigation, data, isLoading, cardType, onMarkerUpdate
         longitud: selectedItem.longitud,
       });
     }
-  }
+  };
+
   const renderCard = ({ item }) => {
     if (cardType === 'sites') {
-
       return (
         <SiteCard
           site={item}
@@ -64,17 +63,25 @@ const GeneralCarousel = ({ navigation, data, isLoading, cardType, onMarkerUpdate
           onPress={() => handleClickDetail(item.id, cardType)}
         />
       );
-    }else if (cardType ==='promocion'){
+    } else if (cardType === 'promocion') {
       return (
         <PromocionesCard
           promocion={item}
           navigation={navigation}
-          onPress={()=>handleClickDetail(item.id, cardType)}
+          onPress={() => handleClickDetail(item.id, cardType)}
         />
-      )
+      );
     }
     return null;
   };
+
+  if (data.length === 0) {
+    return (
+      <View style={styles.noDataContainer}>
+        <Text style={styles.noDataText}>No se encontraron datos.</Text>
+      </View>
+    );
+  }
 
   return (
     <>
@@ -95,8 +102,8 @@ const GeneralCarousel = ({ navigation, data, isLoading, cardType, onMarkerUpdate
           parallaxScrollingOffset: 100,
         }}
         renderItem={renderCard}
-        onSnapToItem={(index)=>handleOnSnap(index)}
-/>
+        onSnapToItem={(index) => handleOnSnap(index)}
+      />
       <Portal>
         <Snackbar
           visible={visible}
@@ -104,10 +111,10 @@ const GeneralCarousel = ({ navigation, data, isLoading, cardType, onMarkerUpdate
           action={{
             label: 'Iniciar sesion',
             onPress: () => {
-              navigation.navigate('AuthFlow')
+              navigation.navigate('AuthFlow');
             },
           }}>
-          Para ver detalles, inicia sesion
+          Para ver detalles, inicia sesión
         </Snackbar>
       </Portal>
     </>
@@ -120,6 +127,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     height: Dimensions.get('window').width,
+  },
+  noDataContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: Dimensions.get('window').width,
+  },
+  noDataText: {
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 

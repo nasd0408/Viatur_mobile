@@ -3,23 +3,24 @@ import { View, Text, ActivityIndicator } from 'react-native';
 import { Avatar, Card, List } from 'react-native-paper';
 import axios from 'axios';
 import { ScrollView } from 'react-native-gesture-handler';
+import { API_BASE_URL } from '../utils/dev';
 
 const CompanyDetailScreen = ({ route }) => {
-  const { company } = route.params;
-  const [services, setServices] = useState([]);
+  const { companyId } = route.params;
   const [loading, setLoading] = useState(true);
+  const [prestador, setPrestador] = useState({});
 
   useEffect(() => {
-    fetchServices();
+    fetchPrestadorById();
   }, []);
 
-  const fetchServices = async () => {
+  const fetchPrestadorById = async () => {
     try {
-      const response = await axios.get(`https://647e6a75c246f166da8f110c.mockapi.io/PrestadorDeServicio/${company.PrestadorDeServicioID}/ServicioTuristico`);
-      setServices(response.data);
+      const response = await axios.get(`${API_BASE_URL}/prestadores/${companyId}`);
+      setPrestador(response.data.data);
       setLoading(false);
     } catch (error) {
-      console.log('Error fetching services:', error);
+      console.log(error);
       setLoading(false);
     }
   };
@@ -36,40 +37,47 @@ const CompanyDetailScreen = ({ route }) => {
     <ScrollView style={{ flex: 1 }}>
       <Card style={{ margin: 10 }}>
         <Card.Title
-          title={company.Nombre}
-          subtitle="Company Details"
-          left={() => <Avatar.Image source={{ uri: company.FotoDePerfil }} />}
-          titleStyle={{marginLeft:20}}
-          subtitleStyle={{marginLeft:20}}
+          title={prestador.nombre}
+          subtitle="Detalles del prestador"
+          left={() => <Avatar.Image source={{ uri: prestador.FotoDePerfil }} />}
+          titleStyle={{ marginLeft: 20 }}
+          subtitleStyle={{ marginLeft: 20 }}
         />
         <Card.Content>
           <List.Item
             title="Dirección"
-            description={company.Direccion}
+            description={prestador.direccion}
             left={(props) => <List.Icon {...props} icon="map-marker" />}
           />
           <List.Item
             title="Teléfono"
-            description={company.Telefono}
+            description={prestador.telefono}
             left={(props) => <List.Icon {...props} icon="phone" />}
           />
-          {/* Add more company details as needed */}
+          {/* Agrega más detalles del prestador según sea necesario */}
         </Card.Content>
       </Card>
-      <Text style={{ margin: 10, fontSize: 18, fontWeight: 'bold' }}>Services Offered:</Text>
-      {services.map((service) => (
-        <Card key={service.ServicioTuristicoID} style={{ marginHorizontal: 10, marginBottom: 10 }}>
-          <Card.Title
-            title={service.Nombre}
-            subtitle={service.Tipo}
-          />
-          <Card.Content>
-            <Text>{service.Descripcion}</Text>
-            <Text>Categoria: {service.Categoria}</Text>
-            {/* Add more service details as needed */}
-          </Card.Content>
-        </Card>
-      ))}
+      <Text style={{ margin: 10, fontSize: 18, fontWeight: 'bold' }}>Servicios Ofrecidos:</Text>
+
+      {prestador.servicios.length > 0 ? (
+        prestador.servicios.map((servicio) => (
+          <Card key={servicio.id} style={{ marginHorizontal: 10, marginBottom: 10 }}>
+            <Card.Title
+              title={servicio.nombre}
+              subtitle={servicio.direccion}
+            />
+            <Card.Content>
+              <Text>{servicio.descripcion}</Text>
+              <Text>Categoría: {servicio.precio}</Text>
+              {/* Agrega más detalles del servicio según sea necesario */}
+            </Card.Content>
+          </Card>
+        ))
+      ) : (
+        <View style={{ margin: 10 }}>
+          <Text>No hay servicios ofrecidos por este prestador.</Text>
+        </View>
+      )}
     </ScrollView>
   );
 };

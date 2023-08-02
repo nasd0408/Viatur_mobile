@@ -122,11 +122,13 @@ const HomeScreen = ({ navigation }) => {
         <Text style={styles.carouselTitle}>Nuestros afiliados te ofrencen los siguientes servicios</Text>
         <GeneralCarousel navigation={navigation} cardType={'servicios'} data={servicioTuristico} isLoading={servicioLoading} /> 
       </View>
+     {/*
       <View style={styles.comoViajarContainer}>
 
       <Text style={styles.carouselTitle}>Nuestras rutas recomendadas</Text>
       <ListaRutas rutas={rutas} navigation={navigation}></ListaRutas>
       </View>
+      */} 
       {authState.authenticated?
       <View style={styles.carouselContainer}>
         <Text style={styles.carouselTitle}>Aprovecha nuestras promociones!</Text>

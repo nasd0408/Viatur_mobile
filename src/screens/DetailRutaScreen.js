@@ -1,12 +1,9 @@
-import React from 'react';
-import { useContext } from 'react';
-
-import { StyleSheet, View, Image } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
-import { Divider, Title,Text, Paragraph } from 'react-native-paper';
-
+import React, { useContext } from 'react';
+import { StyleSheet, View, Image, ScrollView, ActivityIndicator } from 'react-native';
+import { Divider, Title, Text, Paragraph } from 'react-native-paper';
 import { ServicioTuristicoContext } from '../context/ServiciosContext';
 import { SiteContext } from '../context/SiteContext';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 const DetailRutaScreen = ({ route, navigation }) => {
   const { item } = route.params;
@@ -18,7 +15,6 @@ const DetailRutaScreen = ({ route, navigation }) => {
   const { servicioTuristico, isLoading: servicioLoading, galeria: galeriaServicio } = useContext(
     ServicioTuristicoContext
   );
-
 
   const buscarGaleriasDeSitios = (sitiosIds) => {
     const galerias = [];
@@ -55,15 +51,22 @@ const DetailRutaScreen = ({ route, navigation }) => {
 
   return (
     <ScrollView style={styles.container}>
+      <TouchableOpacity onPress={handleGoBack}>
+        <Text style={styles.backButton}>← Volver</Text>
+      </TouchableOpacity>
       <Title style={styles.title}>{item.nombre}</Title>
       <Text style={styles.description}>{item.descripcion}</Text>
 
-      <Text style={styles.sectionTitle}>Galerías</Text>
-      <Text style={styles.sectionDescription}>Las galerías muestran imágenes de los sitios y servicios asociados a esta ruta.</Text>
+      <View style={styles.sectionContainer}>
+        <Title style={styles.sectionTitle}>Galerías</Title>
+        <Paragraph style={styles.sectionDescription}>
+          Las galerías muestran imágenes de los sitios y servicios asociados a esta ruta.
+        </Paragraph>
+      </View>
 
       <View style={styles.sectionContainer}>
         <Title style={styles.subTitle}>Galería de los Sitios</Title>
-        <Paragraph>Aqui encontraras imagenes de los sitios que recorre esta ruta</Paragraph>
+        <Paragraph>Aquí encontrarás imágenes de los sitios que recorre esta ruta.</Paragraph>
         <Divider style={styles.divider} />
         {galeriasSitioAsociados.map((galeria, index) => (
           <View key={index} style={styles.galleryContainer}>
@@ -79,7 +82,7 @@ const DetailRutaScreen = ({ route, navigation }) => {
 
       <View style={styles.sectionContainer}>
         <Title style={styles.subTitle}>Galería de los Servicios</Title>
-        <Paragraph>Aqui encontraras los servicios que puedes adquirir en esta ruta</Paragraph>
+        <Paragraph>Aquí encontrarás los servicios que puedes adquirir en esta ruta.</Paragraph>
         <Divider style={styles.divider} />
         {galeriasServicioAsociados.map((galeria, index) => (
           <View key={index} style={styles.galleryContainer}>
@@ -102,6 +105,11 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#fff',
   },
+  backButton: {
+    fontSize: 18,
+    marginBottom: 16,
+    color: '#007BFF',
+  },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -109,6 +117,9 @@ const styles = StyleSheet.create({
   },
   description: {
     fontSize: 16,
+    marginBottom: 16,
+  },
+  sectionContainer: {
     marginBottom: 16,
   },
   sectionTitle: {
@@ -125,9 +136,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 8,
   },
-  sectionContainer: {
-    marginBottom: 16,
-  },
   divider: {
     marginVertical: 8,
   },
@@ -143,6 +151,12 @@ const styles = StyleSheet.create({
     height: 150,
     resizeMode: 'cover',
     marginRight: 8,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
   },
 });
 
