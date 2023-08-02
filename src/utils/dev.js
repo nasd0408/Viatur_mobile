@@ -19,4 +19,6 @@ const user = {
   Estado: "Active"
 };
 
-export { isLoggedIn, setIsLoggedIn, user };
+const API_BASE_URL="http://192.168.0.104:3000/api/v1"
+
+export { isLoggedIn, setIsLoggedIn, user, API_BASE_URL };

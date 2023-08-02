@@ -25,14 +25,19 @@ const ServiceDetailScreen = ({ route, navigation }) => {
       <Image source={{ uri: serviceImage }} style={styles.bannerImage} />
 
       <View style={styles.sectionContainer}>
+        <Title>{service.nombre}</Title>
+        <Divider style={styles.divider} />
+        <List.Section>
+          <List.Item title="Ofrecido por" description={service.prestador.nombre} />
+          <List.Item title="Con destino a" description={service.destino.nombre} />
+        </List.Section>
         <Title>Detalles del Servicio</Title>
         <Divider style={styles.divider} />
         <List.Section>
-          <List.Item title="Nombre" description={service.nombre} />
-          <List.Item title="Dirección" description={service.dirección} />
-          <List.Item title="Descripción" description={service.descripción} />
+          
+          <List.Item title="Dirección" description={service.direccion} />
+          <List.Item title="Descripción" description={service.descripcion} />
           <List.Item title="Precio" description={`$${service.precio}`} />
-          <List.Item title="Estado" description={service.estado} />
           {/* Mostrar otros atributos del servicio */}
         </List.Section>
       </View>

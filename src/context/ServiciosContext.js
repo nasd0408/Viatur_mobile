@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axios from 'axios';
-import * as SecureStore from 'expo-secure-store';
+import { API_BASE_URL } from '../utils/dev';
+
 
 // Create the context
 export const ServicioTuristicoContext = createContext();
@@ -12,32 +13,18 @@ export const ServicioTuristicoProvider = ({ children }) => {
   const [galeria, setGaleria] = useState([])
   const [isLoading, setIsLoading] = useState(true);
 
- /* const fetchServicioTuristico = async () => {
+ const fetchServicioTuristico = async () => {
     try {
-      // Check if the JWT exists in SecureStore
-      const jwt = await SecureStore.getItemAsync('my-jwt');
-  
-      if (jwt) {
-        // If the JWT exists, log the token
-        console.log('JWT:', jwt);
-      } else {
-        // If the JWT doesn't exist, log a message
-        console.log('No JWT found.');
-      }
-  
-      // Simulate a 1-second delay
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-  
-      const response = await axios.get('https://648a115a5fa58521cab0bbc8.mockapi.io/ServiciosTuristicos');
-      setServicioTuristico(response.data);
+      const response = await axios.get(`${API_BASE_URL}/servicios`);
+      setServicioTuristico(response.data.data);
       setIsLoading(false);
     } catch (error) {
       console.log('Error fetching servicio turistico:', error);
       setIsLoading(false);
     }
   };
-  */
-
+  
+/*
   const fetchServicioTuristico = () =>{
     setServicioTuristico([
       {
@@ -116,7 +103,7 @@ export const ServicioTuristicoProvider = ({ children }) => {
       "eliminado": null
     }])
     setIsLoading(false)
-  }
+  }*/
   useEffect(() => {
     fetchServicioTuristico();
   }, []);
