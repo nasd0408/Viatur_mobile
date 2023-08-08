@@ -14,6 +14,9 @@ const DetailScreen = ({ route, navigation }) => {
   const [destino, setdestino] = useState([])
   const [loading, setLoading] = useState(true)
   const { destinoId } = route.params;
+  // Find gallery images matching the site ID
+  const { galeria } = useContext(SiteContext);
+  const siteGalleryImages = galeria.filter((img) => img.destinoId === destino.id);
   useEffect(() => {
     fetchDestinoById();
   }, []);
@@ -41,9 +44,6 @@ const DetailScreen = ({ route, navigation }) => {
     );
   }
 
-  // Find gallery images matching the site ID
-  const { galeria } = useContext(SiteContext);
-  const siteGalleryImages = galeria.filter((img) => img.destinoId === destino.id);
 
   return (
     <ScrollView style={styles.container}>
