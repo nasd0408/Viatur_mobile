@@ -9,7 +9,7 @@ import { API_BASE_URL } from '../utils/dev';
 
 
 
-const SearchScreen = ({navigation}) => {
+const SearchScreen = ({ navigation }) => {
   const [searchText, setSearchText] = useState({});
   const [searchResults, setSearchResults] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -18,7 +18,7 @@ const SearchScreen = ({navigation}) => {
   const [diversidad, setDiversidad] = useState([]);
   const [gastronomia, setGastronomia] = useState([]);
   const [temporadas, setTemporadas] = useState([]);
-  
+
   const fetchPossibleValues = async (endpoint) => {
     try {
       const response = await axios.get(`${API_BASE_URL}/${endpoint}`);
@@ -35,7 +35,7 @@ const SearchScreen = ({navigation}) => {
     fetchPossibleValues('diversidad').then((diversidadData) => setDiversidad(diversidadData));
     fetchPossibleValues('gastronomia').then((gastronomiaData) => setGastronomia(gastronomiaData));
     fetchPossibleValues('temporada').then((temporadasData) => setTemporadas(temporadasData));
-    
+
   }, []);
   const fetchData = async () => {
     setLoading(true);
@@ -66,7 +66,27 @@ const SearchScreen = ({navigation}) => {
 
   const handleSitePress = (item) => {
     console.log(item);
-    navigation.navigate('DetailScreen', { destinoId:item ,cardType:"sites"  });
+    navigation.navigate('DetailScreen', { destinoId: item, cardType: "sites" });
+  };
+
+  const renderSegmentedButtons = (title, state, data, paramName) => {
+    if (!data || data.length === 0) {
+      return null; // Return null if data is empty
+    }
+
+    return (
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>{title}:</Text>
+        <SegmentedButtons
+          value={searchText[paramName] || ''}
+          onValueChange={(value) => handleValueChange(paramName, value)}
+          buttons={data.map((item) => ({
+            value: item.id,
+            label: item.descripcion,
+          }))}
+        />
+      </View>
+    );
   };
 
   const renderItem = ({ item }) => {
@@ -74,12 +94,12 @@ const SearchScreen = ({navigation}) => {
       <SiteCard
         site={item}
         navigation={navigation}
-        onPress={()=>handleSitePress(item.id)}
+        onPress={() => handleSitePress(item.id)}
         key={item.id}
       />
     );
   };
-  
+
   const handleValueChange = (param, value) => {
     setSearchText((prev) => {
       // If the selected value is already the same as the current value, set it to null (unselect)
@@ -87,91 +107,36 @@ const SearchScreen = ({navigation}) => {
       return { ...prev, [param]: updatedValue };
     });
   };
-  
+
   return (
     <ScrollView style={styles.container}>
       <View>
-      <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 10 }}>
-        Bienvenido a la Búsqueda de Destinos
-      </Text>
-      <Paragraph>
-        Utiliza los siguientes filtros para personalizar tu búsqueda de destinos turísticos. Selecciona los atributos que más te interesen y obtén resultados que se adapten a tus preferencias. Puedes elegir entre diferentes opciones de biomas, climas, diversidad, gastronomía y temporadas para encontrar el destino perfecto para tu próximo viaje.
-      </Paragraph>
-      <Paragraph>
-        Para seleccionar una opción, simplemente toca el botón correspondiente en cada sección. Si deseas deseleccionar una opción, basta con tocar nuevamente el botón ya seleccionado. Luego, presiona "Buscar" para obtener los destinos que coincidan con tus criterios.
-      </Paragraph>
-      <Paragraph>
-        ¡Disfruta explorando una amplia variedad de destinos y descubre nuevas experiencias en cada rincón del mundo!
-      </Paragraph>
-    </View>
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Bioma:</Text>
-        <SegmentedButtons
-          value={searchText.biomaId || ''}
-          onValueChange={(value) => handleValueChange('biomaId', value)}
-          buttons={biomas.map((bioma) => ({
-            value: bioma.id,
-            label: bioma.descripcion, 
-          }))}
-        />
-      </View>
+        <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 10 }}>
+          Bienvenido a la Búsqueda de Destinos
+        </Text>
+        <Paragraph>
+          Utiliza los siguientes filtros para personalizar tu búsqueda de destinos turísticos. Selecciona los atributos que más te interesen y obtén resultados que se adapten a tus preferencias. Puedes elegir entre diferentes opciones de biomas, climas, diversidad, gastronomía y temporadas para encontrar el destino perfecto para tu próximo viaje.
+        </Paragraph>
+        <Paragraph>
+          Para seleccionar una opción, simplemente toca el botón correspondiente en cada sección. Si deseas deseleccionar una opción, basta con tocar nuevamente el botón ya seleccionado. Luego, presiona "Buscar" para obtener los destinos que coincidan con tus criterios.
+        </Paragraph>
+        {renderSegmentedButtons('Bioma', biomas, biomas, 'biomaId')}
+        {renderSegmentedButtons('Clima', climas, climas, 'climaId')}
+        {renderSegmentedButtons('Diversidad', diversidad, diversidad, 'diversidadId')}
+        {renderSegmentedButtons('Gastronomia', gastronomia, gastronomia, 'gastronomiaId')}
+        {renderSegmentedButtons('Temporadas', temporadas, temporadas, 'temporadaId')}
 
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Clima:</Text>
-        <SegmentedButtons
-          value={searchText.climaId || ''}
-          onValueChange={(value) => handleValueChange('climaId', value)}
-          buttons={climas.map((clima) => ({
-            value: clima.id,
-            label: clima.descripcion, 
-          }))}
-        />
-      </View>
-
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Diversidad:</Text>
-        <SegmentedButtons
-          value={searchText.diversidadId || ''}
-          onValueChange={(value) => handleValueChange('diversidadId', value)}
-          buttons={diversidad.map((diversidad) => ({
-            value: diversidad.id,
-            label: diversidad.descripcion, 
-          }))}
-        />
-      </View>
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Gastronomia:</Text>
-        <SegmentedButtons
-          value={searchText.gastronomiaId || ''}
-          onValueChange={(value) => handleValueChange('gastronomiaId', value)}
-          buttons={gastronomia.map((gastronomia) => ({
-            value: gastronomia.id,
-            label: gastronomia.descripcion, 
-          }))}
-        />
-      </View>
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Temporadas:</Text>
-        <SegmentedButtons
-          value={searchText.temporadaId || ''}
-          onValueChange={(value) => handleValueChange('temporadaId', value)}
-          buttons={temporadas.map((temporada) => ({
-            value: temporada.id,
-            label: temporada.descripcion, 
-          }))}
-        />
-      </View>
-
-      {/* Render other sections for Gastronomia, Temporada, and other parameters similarly */}
-
-      {loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator />
         </View>
-      ) : (
-        // Use map to render the searchResults array
-        searchResults.map((item) => renderItem({ item })) // Pass each item to the renderItem function
-      )}
+        
+
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator />
+          </View>
+        ) : (
+          // Use map to render the searchResults array
+          searchResults.map((item) => renderItem({ item })) // Pass each item to the renderItem function
+        )}
     </ScrollView>
   );
 };
