@@ -1,12 +1,13 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { View, Image, ImageBackground, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { DrawerContentScrollView, DrawerItemList } from '@react-navigation/drawer';
 import { Paragraph } from 'react-native-paper';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from '@react-navigation/native';
 import ColorScheme from '../../utils/ColorScheme';
-import { user } from '../../utils/dev';
+import { API_BASE_URL, user } from '../../utils/dev';
 import { useAuth } from '../../context/AuthContext';
+import { useUser } from '../../context/UserContext';
 
 const CustomDrawer = (props) => {
   const navigation = useNavigation();
@@ -14,22 +15,29 @@ const CustomDrawer = (props) => {
   const handleLogin = () => {
     navigation.navigate('AuthFlow');
   };
+  const handleLogout=()=>{
+    navigation.navigate('HomeStack');
+    onLogout();
+  }
+  const { userData } = useUser(); // Access user data from the context
 
- 
+const profilePictureUrl =userData?.persona.foto  ? `${API_BASE_URL}/persona/foto/${userData.persona.foto}`
+: null
+  const nombreCompleto = userData?.persona.nombres ? userData.persona.nombres + " " + userData?.persona.apellidos: "Cargando" ;
   return (
     <View style={styles.container}>
       <DrawerContentScrollView {...props} contentContainerStyle={styles.drawerContentContainer}>
         <ImageBackground source={require('../../../assets/menu-bg-blue.jpg')} style={styles.imageBackground}>
           {authState?.authenticated ? (
             <View style={styles.profileContainer}>
-              <Image source={{ uri: user.FotoDePerfil }} style={styles.profileImage} />
-              <Paragraph style={styles.userName}>{user.Nombre + ' ' + user.Apellido}</Paragraph>
+              <Image source={{ uri:profilePictureUrl }} style={styles.profileImage} />
+              <Paragraph style={styles.userName}>{nombreCompleto}</Paragraph>
             </View>
           ) : (
             <TouchableOpacity onPress={handleLogin}>
               <View style={styles.loginContainer}>
                 <Ionicons name="person-circle-outline" size={70} color={ColorScheme.OffWhite} />
-                <Text style={styles.loginText}>Log In</Text>
+                <Text style={styles.loginText}>Iniciar sesion</Text>
               </View>
             </TouchableOpacity>
           )}
@@ -46,7 +54,7 @@ const CustomDrawer = (props) => {
           </View>
         </TouchableOpacity>
         {authState.authenticated &&
-        <TouchableOpacity onPress={onLogout} style={styles.touchableOpacities}>
+        <TouchableOpacity onPress={handleLogout} style={styles.touchableOpacities}>
           <View style={styles.bottomOptionsContainer}>
             <Ionicons name="exit-outline" size={22} />
             <Text style={styles.bottomOptionsText}>Salir</Text>

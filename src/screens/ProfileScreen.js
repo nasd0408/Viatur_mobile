@@ -1,117 +1,101 @@
-import React from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
-import { user } from "../utils/dev";
+import React from 'react';
+import { View, Image, StyleSheet } from 'react-native';
+import { API_BASE_URL } from '../utils/dev';
+import { useUser } from '../context/UserContext';
+import { Button, Text } from 'react-native-paper';
+import { Dimensions } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 
-const ProfileScreen = ({ navigation }) => {
-  const handleEditProfile = () => {
-    console.log("handleEditProfile")
-    navigation.navigate('Edit', {user});
+const ProfileScreen = ({navigation}) => {
+
+  const { userData } = useUser(); // Access user data from the context
+  function obtenerNombreSexo(inicialSexo) {
+    switch (inicialSexo) {
+      case 'M':
+        return 'Masculino';
+      case 'F':
+        return 'Femenino';
+      default:
+        return 'Otro';
+    }
   }
-  
+  const profilePictureUrl = userData.persona.foto
+    ? `${API_BASE_URL}/persona/foto/${userData.persona.foto}`
+    : null;
+
   return (
-    <View style={styles.container}>
-      <Image style={styles.profileImage} source={{ uri: user.FotoDePerfil }} />
-      <View style={styles.separator} />
-      <Text style={styles.name}>{`${user.Nombre} ${user.Apellido}`}</Text>
-      <View style={styles.separator} />
-      <View style={styles.row}>
-        <Text style={styles.label}> ID: </Text>
-        <Text style={styles.text}>{user.TuristaID}</Text>
+    <ScrollView contentContainerStyle={styles.container}>
+      <View style={styles.profileImageContainer}>
+        {profilePictureUrl && (
+          <Image
+            source={{ uri: profilePictureUrl }}
+            style={styles.profileImage}
+          />
+        )}
+        {/* Add a transparent overlay with a gradient */}
+        <View style={styles.overlay}></View>
       </View>
-      <View style={styles.row}>
-        <Text style={styles.label}> Username: </Text>
-        <Text style={styles.text}>{user.UsuarioID}</Text>
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.label}> Address: </Text>
-        <Text style={styles.text}>{user.Direccion}</Text>
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.label}> Phone: </Text>
-        <Text style={styles.text}>{user.Telefono}</Text>
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.label}> Date of Birth: </Text>
-        <Text style={styles.text}>{user.FechaDeNacimiento}</Text>
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.label}> Registration Date: </Text>
-        <Text style={styles.text}>{user.FechaDeRegistro}</Text>
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.label}> Status: </Text>
-        <Text style={styles.text}>{user.Estado}</Text>
-      </View>
-      <View style={styles.separator} />
-      <View style={styles.buttonContainer}>
-      <TouchableOpacity style={styles.editButton} onPress={handleEditProfile}>
-          <Text style={styles.editButtonText}>Editar perfil</Text>
-      </TouchableOpacity>
-      </View>
-      <View style={styles.separator} />
-    </View>
+      <Text style={styles.label}>Nombre:</Text>
+      <Text style={styles.value}>{userData.persona.nombres} {userData.persona.apellidos}</Text>
+      <Text style={styles.label}>Correo electrónico:</Text>
+      <Text style={styles.value}>{userData.email}</Text>
+      <Text style={styles.label}>Direccion:</Text>
+      <Text style={styles.value}>{userData.persona.direccion}</Text>
+      <Text style={styles.label}>Numero de telefono:</Text>
+      <Text style={styles.value}>{userData.persona.telefono}</Text>
+      <Text style={styles.label}>Parte de laraventur desde:</Text>
+      <Text style={styles.value}>{new Date(userData.creado).toLocaleDateString()}</Text>
+      <Text style={styles.label}>Fecha de nacimiento:</Text>
+      <Text style={styles.value}>{new Date(userData.persona.fechaNacimiento).toLocaleDateString()}</Text>
+      <Text style={styles.label}>Sexo:</Text>
+      <Text style={styles.value}>{obtenerNombreSexo(userData.persona.sexo)}</Text>
+      <Text style={styles.label}>En Laraventur con rol de :</Text>
+      <Text style={styles.value}>{userData.rol.nombre}</Text>
+      <Button
+      onPress={()=>navigation.navigate('Edit')}
+      mode='contained'
+      >Editar perfil</Button>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 20,
-    margin: 20,
-    backgroundColor: "#F5F5F5",
-    paddingBottom: 60,
+    alignItems: 'center',
+  },
+  profileImageContainer: {
+    position: 'relative', // Make sure the overlay stays on top of the image
   },
   profileImage: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    marginBottom: 20,
+    width: Dimensions.get('window').width/2,
+    height: Dimensions.get('window').width/2,
+    borderRadius:100,
   },
-  name: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 10,
-    textAlign: "right",
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.2)', // Adjust the opacity (last value) as needed
+    // You can add a gradient background here using LinearGradient from 'react-native-linear-gradient'
+    width: Dimensions.get('window').width/2,
+    height: Dimensions.get('window').width/2,
+    borderRadius:100,
   },
   text: {
+    marginBottom: 8,
+  },
+
+  label: {
     fontSize: 16,
-    marginBottom: 10,
-    textAlign: "left",
+    fontWeight: 'bold',
+    marginBottom: 8,
   },
-  separator: {
-    borderBottomColor: "#CCC",
-    borderBottomWidth: 1,
-    width: "100%",
-    marginBottom: 10,
+  value: {
+    fontSize: 14,
+    marginBottom: 8,
   },
-  buttonContainer: {
-    marginTop: 0,
-    alignItems: "center",
-    marginBottom: 5,
-  },
-  editButton: {
-    backgroundColor: colors.Primary,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-  },
-  editButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 5,
-  }
 });
 
 export default ProfileScreen;

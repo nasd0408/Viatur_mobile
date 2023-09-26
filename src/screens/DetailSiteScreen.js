@@ -39,7 +39,7 @@ const DetailSiteScreen = ({ route, navigation }) => {
         <Text style={styles.label}>Ciudad:</Text>
         <Text style={styles.value}>{item.ciudad}</Text>
 
-        <Text style={styles.label}>Municipio:</Text>
+        <Text style={styles.label}>queloque:</Text>
         <Text style={styles.value}>{item.municipio}</Text>
 
 

@@ -42,8 +42,10 @@ export default StyleSheet.create({
     color: '#fff', // Adjust the text color for better visibility
   },
   link: {
-    color: 'blue',
+    color: ColorScheme.OffWhite,
     fontWeight: 'bold',
+    textDecorationStyle:'dashed',
+    textDecorationLine:'underline'
   },
   modalContainer: {
     backgroundColor: 'white',

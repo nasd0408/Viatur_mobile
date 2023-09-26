@@ -4,6 +4,7 @@ import { Avatar, Card, List } from 'react-native-paper';
 import axios from 'axios';
 import { ScrollView } from 'react-native-gesture-handler';
 import { API_BASE_URL } from '../utils/dev';
+import CompanyDetails from '../components/ContactosPrestador/CompanyDetails';
 
 const CompanyDetailScreen = ({ route }) => {
   const { companyId } = route.params;
@@ -78,6 +79,14 @@ const CompanyDetailScreen = ({ route }) => {
           <Text>No hay servicios ofrecidos por este prestador.</Text>
         </View>
       )}
+      <View style={{paddingHorizontal:20}}>
+
+      <CompanyDetails
+        companyName={prestador.nombre}
+        contactNumber={prestador.telefono}
+        prestadorId={prestador.id}
+        />
+        </View>
     </ScrollView>
   );
 };
