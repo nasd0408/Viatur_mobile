@@ -32,7 +32,7 @@ const TourismCompaniesScreen = ({ navigation }) => {
 
   const handleCompanyPress = (companyId) => {
     if (authState.authenticated === null) {
-      setVisible(!visible);
+      setVisibleSnackbar(!visibleSnackbar);
     } else {
       navigation.navigate('CompanyDetail', { companyId });
     }

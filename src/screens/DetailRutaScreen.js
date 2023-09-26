@@ -1,47 +1,69 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { StyleSheet, View, Image, ScrollView, ActivityIndicator } from 'react-native';
 import { Divider, Title, Text, Paragraph } from 'react-native-paper';
-import { ServicioTuristicoContext } from '../context/ServiciosContext';
-import { SiteContext } from '../context/SiteContext';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import axios from 'axios';
+import { API_BASE_URL } from '../utils/dev';
 
-const DetailRutaScreen = ({ route, navigation }) => {
-  const { item } = route.params;
-  const handleGoBack = () => {
-    navigation.goBack();
-  };
+  const DetailRutaScreen = ({ route, navigation }) => {
+    const DEFAULT_IMAGE_URL =
+  "https://images.unsplash.com/photo-1488489153583-89ce18dd4968?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80";
 
-  const { sites, isLoading: siteLoading, galeria: galeriaSitio } = useContext(SiteContext);
-  const { servicioTuristico, isLoading: servicioLoading, galeria: galeriaServicio } = useContext(
-    ServicioTuristicoContext
-  );
-
-  const buscarGaleriasDeSitios = (sitiosIds) => {
-    const galerias = [];
-    sitiosIds.forEach((sitioId) => {
-      const sitio = sites.find((site) => site.id === sitioId);
-      const imagenes = galeriaSitio.filter((img) => img.destinoId === sitioId);
-      const galeria = imagenes.map((imagen) => imagen.url);
-      galerias.push({ sitioId: sitio.id, nombre: sitio.nombre, galeria: galeria });
-    });
-    return galerias;
-  };
-
-  const buscarGaleriasDeServicios = (serviciosIds) => {
-    const galerias = [];
-    serviciosIds.forEach((servicioId) => {
-      const servicio = servicioTuristico.find((servicio) => servicio.id === servicioId);
-      const imagenes = galeriaServicio.filter((img) => img.serviciosId === servicioId);
-      const galeria = imagenes.map((imagen) => imagen.url);
-      galerias.push({ nombre: servicio.nombre, galeria: galeria });
-    });
-    return galerias;
-  };
-
-  const galeriasSitioAsociados = buscarGaleriasDeSitios(item.sitios);
-  const galeriasServicioAsociados = buscarGaleriasDeServicios(item.servicios);
-
-  if (!item) {
+    const { item } = route.params;
+    const [ruta, setRuta] = useState({});
+    const [loading, setLoading] = useState(true);
+    const [imageServicioUrls, setImageServicioUrls] = useState([]);
+  
+    const handleGoBack = () => {
+      navigation.goBack();
+    };
+  
+    useEffect(() => {
+      fetchRutaById();
+    }, []);
+  
+    const fetchRutaById = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/rutas-turisticas/${item.id}`);
+        setRuta(response.data.data);
+        setLoading(false);
+  
+        // Llamar a getServicioImage para cada servicio turístico
+        const servicioImagePromises = response.data.data.serviciosTuristicos.map((servicio) =>
+          getServicioImage(servicio.id)
+        );
+        
+        // Esperar a que se completen todas las llamadas y obtener las imágenes
+        const servicioImages = await Promise.all(servicioImagePromises);
+        
+        // Establecer las imágenes para cada servicio turístico
+        setImageServicioUrls(servicioImages);
+      } catch (error) {
+        console.log(error);
+        setLoading(false);
+      }
+    };
+  
+    const getServicioImage = async (servicioId) => {
+      try {
+        const { data } = await axios.get(
+          `${API_BASE_URL}/galeria-servicio/${servicioId}/servicio`
+        );
+  
+        const imageServicioUrls = data.data.map((image) => {
+          return image
+            ? `${API_BASE_URL}/galeria-servicio/${image.archivo}`
+            : DEFAULT_IMAGE_URL;
+        });
+  
+        return imageServicioUrls;
+      } catch (e) {
+        return [DEFAULT_IMAGE_URL];
+      }
+    };
+  
+ 
+  if (loading) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator animating={true} />
@@ -51,50 +73,39 @@ const DetailRutaScreen = ({ route, navigation }) => {
 
   return (
     <ScrollView style={styles.container}>
-      <TouchableOpacity onPress={handleGoBack}>
-        <Text style={styles.backButton}>← Volver</Text>
-      </TouchableOpacity>
-      <Title style={styles.title}>{item.nombre}</Title>
-      <Text style={styles.description}>{item.descripcion}</Text>
-
-      <View style={styles.sectionContainer}>
-        <Title style={styles.sectionTitle}>Galerías</Title>
-        <Paragraph style={styles.sectionDescription}>
-          Las galerías muestran imágenes de los sitios y servicios asociados a esta ruta.
-        </Paragraph>
-      </View>
-
-      <View style={styles.sectionContainer}>
-        <Title style={styles.subTitle}>Galería de los Sitios</Title>
-        <Paragraph>Aquí encontrarás imágenes de los sitios que recorre esta ruta.</Paragraph>
-        <Divider style={styles.divider} />
-        {galeriasSitioAsociados.map((galeria, index) => (
-          <View key={index} style={styles.galleryContainer}>
-            <Title style={styles.galleryTitle}>{galeria.nombre}</Title>
-            <ScrollView horizontal>
-              {galeria.galeria.map((imageUrl, imageIndex) => (
-                <Image key={imageIndex} source={{ uri: imageUrl }} style={styles.galleryImage} />
-              ))}
-            </ScrollView>
+      <Title style={styles.title}>{ruta.nombre}</Title>
+      <Text style={styles.description}>{ruta.descripcion}</Text>
+      {ruta.prestadoresDeServicio &&
+        ruta.prestadoresDeServicio.map((prestador, index) => (
+          <View key={index}>
+            <Title>{prestador.nombre}</Title>
+            <Paragraph>telefono: {prestador.telefono}</Paragraph>
+            <Paragraph>Dirección: {prestador.direccion}</Paragraph>
           </View>
         ))}
-      </View>
-
-      <View style={styles.sectionContainer}>
-        <Title style={styles.subTitle}>Galería de los Servicios</Title>
-        <Paragraph>Aquí encontrarás los servicios que puedes adquirir en esta ruta.</Paragraph>
-        <Divider style={styles.divider} />
-        {galeriasServicioAsociados.map((galeria, index) => (
-          <View key={index} style={styles.galleryContainer}>
-            <Title style={styles.galleryTitle}>{galeria.nombre}</Title>
-            <ScrollView horizontal>
-              {galeria.galeria.map((imageUrl, imageIndex) => (
-                <Image key={imageIndex} source={{ uri: imageUrl }} style={styles.galleryImage} />
-              ))}
-            </ScrollView>
+        {ruta.serviciosTuristicos &&
+        ruta.serviciosTuristicos.map((servicio, index) => (
+          <View key={index}>
+            <Title>Servicio Turístico {index + 1}</Title>
+            <Paragraph>Nombre: {servicio.nombre}</Paragraph>
+            <Paragraph>Descripción: {servicio.descripcion}</Paragraph>
+            <View style={styles.sectionContainer}>
+              <Title>Galería del Servicio</Title>
+              <Divider style={styles.divider} />
+              <ScrollView horizontal>
+                {imageServicioUrls[index] && imageServicioUrls[index].map((imageUrl, i) => (
+                  <View key={i} style={{ marginRight: 10 }}>
+                    <Image
+                      source={{ uri: imageUrl }}
+                      style={{ width: 200, height: 200 }}
+                    />
+                  </View>
+                ))}
+              </ScrollView>
+            </View>
           </View>
         ))}
-      </View>
+
     </ScrollView>
   );
 };

@@ -58,6 +58,16 @@ const styles = StyleSheet.create({
   overlay: {
     backgroundColor: 'rgba(0, 0, 0, 0.5)', // Adjust the opacity and color as needed
   },
+  overlayLogo:{
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    paddingHorizontal:20,
+    borderRadius:100,
+    marginHorizontal:20,
+    width:'80%',
+  },
+  logo:{
+    width:'100%',
+  }
 });
 
 export default styles;

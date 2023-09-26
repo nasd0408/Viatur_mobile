@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet } from 'react-native';
-import SiteCard from '../components/Sites/SiteCard';
-import { ActivityIndicator, Paragraph, Searchbar, SegmentedButtons, Text } from 'react-native-paper';
+import { View, StyleSheet, Dimensions } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
+import { ActivityIndicator, Paragraph, SegmentedButtons, Text,Portal,Snackbar } from 'react-native-paper';
 import axios from 'axios';
-import { Dimensions } from 'react-native';
-import { ScrollView, FlatList } from 'react-native-gesture-handler';
 import { API_BASE_URL } from '../utils/dev';
+import SiteCard from '../components/Sites/SiteCard';
+import { useAuth } from '../context/AuthContext';
 
 
 
@@ -18,6 +18,10 @@ const SearchScreen = ({ navigation }) => {
   const [diversidad, setDiversidad] = useState([]);
   const [gastronomia, setGastronomia] = useState([]);
   const [temporadas, setTemporadas] = useState([]);
+  const [visible, setVisible] = useState(false);
+
+  const { authState } = useAuth();
+
 
   const fetchPossibleValues = async (endpoint) => {
     try {
@@ -65,8 +69,11 @@ const SearchScreen = ({ navigation }) => {
   }, [searchText]);
 
   const handleSitePress = (item) => {
-    console.log(item);
+    if (authState.authenticated === null) {
+      setVisible(!visible);
+    } else {
     navigation.navigate('DetailScreen', { destinoId: item, cardType: "sites" });
+  }
   };
 
   const renderSegmentedButtons = (title, state, data, paramName) => {
@@ -75,6 +82,8 @@ const SearchScreen = ({ navigation }) => {
     }
 
     return (
+      
+        <ScrollView horizontal>
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>{title}:</Text>
         <SegmentedButtons
@@ -84,8 +93,11 @@ const SearchScreen = ({ navigation }) => {
             value: item.id,
             label: item.descripcion,
           }))}
-        />
+          density='medium'
+          />
       </View>
+          </ScrollView>
+
     );
   };
 
@@ -109,6 +121,7 @@ const SearchScreen = ({ navigation }) => {
   };
 
   return (
+      <>
     <ScrollView style={styles.container}>
       <View>
         <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 10 }}>
@@ -126,18 +139,32 @@ const SearchScreen = ({ navigation }) => {
         {renderSegmentedButtons('Gastronomia', gastronomia, gastronomia, 'gastronomiaId')}
         {renderSegmentedButtons('Temporadas', temporadas, temporadas, 'temporadaId')}
 
-        </View>
-        
+      </View>
 
-        {loading ? (
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator />
-          </View>
-        ) : (
-          // Use map to render the searchResults array
-          searchResults.map((item) => renderItem({ item })) // Pass each item to the renderItem function
-        )}
+
+      {loading ? (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator />
+        </View>
+      ) : (
+        // Use map to render the searchResults array
+        searchResults.map((item) => renderItem({ item })) // Pass each item to the renderItem function
+      )}
     </ScrollView>
+    <Portal>
+    <Snackbar
+      visible={visible}
+      onDismiss={() => setVisible(false)}
+      action={{
+        label: 'Iniciar sesion',
+        onPress: () => {
+          navigation.navigate('AuthFlow');
+        },
+      }}>
+      Para ver detalles, inicia sesión
+    </Snackbar>
+  </Portal>
+  </>
   );
 };
 

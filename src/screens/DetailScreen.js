@@ -14,9 +14,6 @@ const DetailScreen = ({ route, navigation }) => {
   const [destino, setdestino] = useState([])
   const [loading, setLoading] = useState(true)
   const { destinoId } = route.params;
-  // Find gallery images matching the site ID
-  const { galeria } = useContext(SiteContext);
-  const siteGalleryImages = galeria.filter((img) => img.destinoId === destino.id);
   useEffect(() => {
     fetchDestinoById();
   }, []);
@@ -51,8 +48,8 @@ const DetailScreen = ({ route, navigation }) => {
       <View style={styles.galleryContainer}>
         <Text style={styles.label}>Galeria de imagenes </Text>
         <ScrollView horizontal={true}>
-          {siteGalleryImages.map((photo) => (
-            <Image key={photo.id} source={{ uri: photo.url }} style={styles.galleryImage} />
+          {destino.galerias.map((photo) => (
+            <Image key={photo.id} source={{ uri: `${API_BASE_URL}/galeria-destino/${photo.archivo}` }} style={styles.galleryImage} />
           ))}
         </ScrollView>
       </View>
@@ -105,8 +102,8 @@ const DetailScreen = ({ route, navigation }) => {
           </>
         )}
 
-        <CommentSection siteId={destino.id} />
-      </View>
+        <CommentSection EntidadId={destino.id} TipoEntidad="Destino" />
+      </View> 
 
       <Button onPress={handleGoBack} style={styles.button}>
         Go Back

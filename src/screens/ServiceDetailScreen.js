@@ -1,43 +1,106 @@
 import React, { useContext } from 'react';
-import { View, ScrollView, Image, StyleSheet } from 'react-native';
-import { Text, Button, Divider, List, Title, IconButton } from 'react-native-paper';
-import { SiteContext } from '../context/SiteContext';
-import { ServicioTuristicoContext } from '../context/ServiciosContext';
+import { View, Image, StyleSheet } from 'react-native';
+import { Text, Button, Divider, List, Title, IconButton, ActivityIndicator } from 'react-native-paper';
+import { useState } from 'react';
+import { useEffect } from 'react';
+import axios from 'axios';
+import { API_BASE_URL } from '../utils/dev';
+import CommentSection from '../components/CommentSection/CommentSection';
+import { ScrollView } from 'react-native-gesture-handler';
+import CompanyDetails from '../components/ContactosPrestador/CompanyDetails';
 
 const ServiceDetailScreen = ({ route, navigation }) => {
   const { item: service } = route.params;
 
-  const { galeria: galeriaSitio } = useContext(SiteContext);
-  const siteGalleryImages = galeriaSitio.filter((img) => img.destinoId === service.destinoId);
+  const [imageServicioUrls, setImageServicioUrls] = useState([]); // Initialize as an empty array
+  const [imageDestinoUrls, setImageDestinoUrls] = useState([]); // Initialize as an empty array
+  const [servicio, setServicio] = useState({})
+  const [isLoading, setisLoading] = useState(true)
+  const DEFAULT_IMAGE_URL =
+  "https://images.unsplash.com/photo-1488489153583-89ce18dd4968?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80";
 
-  const { galeria: galeriaServicio } = useContext(ServicioTuristicoContext);
-  const serviceGalleryImages = galeriaServicio.filter((img) => img.serviciosId === service.id);
-
-  const findImageForService = (servicioId) => {
-    const image = galeriaServicio.find((img) => img.serviciosId === servicioId);
-    return image ? image.url : 'https://source.unsplash.com/random';
+useEffect(() => {
+  const getServicioData = async (servicioId) => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/servicios/${servicioId}`);
+      setServicio(response.data.data);
+      setisLoading(false);
+    } catch (error) {
+      console.log(error);
+      setisLoading(false);
+    }
   };
+  getServicioData(service.id);
+}, [service.id]);
 
-  const serviceImage = findImageForService(service.id);
+useEffect(() => {
+  const getServicioImage = async (servicioId) => {
+    try {
+      const { data } = await axios.get(
+        `${API_BASE_URL}/galeria-servicio/${servicioId}/servicio`
+        );
+      
+
+      const imageServicioUrls = data.data.map((image) => {
+        return image
+          ? `${API_BASE_URL}/galeria-servicio/${image.archivo}`
+          : DEFAULT_IMAGE_URL;
+      });
+
+      setImageServicioUrls(imageServicioUrls);
+    } catch (e) {
+      setImageServicioUrls([DEFAULT_IMAGE_URL]);
+    }
+  };
+  getServicioImage(service.id);
+}, [service.id]);
+
+useEffect(() => {
+  const getDestinoImage = async (destinoId) => {
+    try {
+      const { data } = await axios.get(
+        `${API_BASE_URL}/galeria-destino/${destinoId}/destino`
+        );
+
+      const imageDestinoUrls = data.data.map((image) => {
+        return image
+          ? `${API_BASE_URL}/galeria-destino/${image.archivo}`
+          : DEFAULT_IMAGE_URL;
+      });
+
+      setImageDestinoUrls(imageDestinoUrls);
+    } catch (e) {
+      setImageDestinoUrls([DEFAULT_IMAGE_URL]);
+    }
+  };
+  getDestinoImage(service.destino.id);
+}, [service.destino.id]);
+if (isLoading) {
+  return (
+    <View style={styles.loadingContainer}>
+      <ActivityIndicator animating={true} />
+    </View>
+  );
+}
 
   return (
     <ScrollView style={styles.container}>
-      <Image source={{ uri: serviceImage }} style={styles.bannerImage} />
+      <Image source={{ uri: imageServicioUrls[0] }} style={styles.bannerImage} />
 
       <View style={styles.sectionContainer}>
-        <Title>{service.nombre}</Title>
+        <Title>{servicio.nombre}</Title>
         <Divider style={styles.divider} />
         <List.Section>
-          <List.Item title="Ofrecido por" description={service.prestador.nombre} />
-          <List.Item title="Con destino a" description={service.destino.nombre} />
+          <List.Item title="Ofrecido por" description={servicio.prestador.nombre} />
+          <List.Item title="Con destino a" description={servicio.destino.nombre} />
         </List.Section>
         <Title>Detalles del Servicio</Title>
         <Divider style={styles.divider} />
         <List.Section>
-          
-          <List.Item title="Dirección" description={service.direccion} />
-          <List.Item title="Descripción" description={service.descripcion} />
-          <List.Item title="Precio" description={`$${service.precio}`} />
+
+          <List.Item title="Dirección" description={servicio.direccion} />
+          <List.Item title="Descripción" description={servicio.descripcion} />
+          <List.Item title="Precio" description={`$${servicio.precio}`} />
           {/* Mostrar otros atributos del servicio */}
         </List.Section>
       </View>
@@ -46,62 +109,38 @@ const ServiceDetailScreen = ({ route, navigation }) => {
         <Title>Galería del Destino</Title>
         <Divider style={styles.divider} />
         <ScrollView horizontal>
-          {siteGalleryImages.map((image, index) => (
-            <Image key={index} source={{ uri: image.url }} style={styles.galleryImage} />
-          ))}
-        </ScrollView>
+      {imageDestinoUrls.map((imageUrl, index) => (
+        <View key={index} style={{ marginRight: 10 }}>
+          <Image
+            source={{ uri: imageUrl }}
+            style={{ width: 200, height: 200 }}
+          />
+        </View>
+      ))}
+    </ScrollView>
       </View>
 
       <View style={styles.sectionContainer}>
         <Title>Galería del Servicio</Title>
         <Divider style={styles.divider} />
         <ScrollView horizontal>
-          {serviceGalleryImages.map((image, index) => (
-            <Image key={index} source={{ uri: image.url }} style={styles.galleryImage} />
+          {imageServicioUrls.map((imageUrl, index) => (
+            <View key={index} style={{ marginRight: 10 }}>
+              <Image
+                source={{ uri: imageUrl }}
+                style={{ width: 200, height: 200 }}
+              />
+
+            </View>
           ))}
         </ScrollView>
       </View>
-
-      <View style={styles.sectionContainer}>
-        <Title>Detalles de la Empresa</Title>
-        <Divider style={styles.divider} />
-
-        <View style={styles.companyDetailsContainer}>
-          <View style={styles.companyInfoContainer}>
-            <Text style={styles.companyLabel}>Nombre de la Empresa:</Text>
-            <Text style={styles.companyValue}>Empresa Ejemplo S.A.</Text>
-          </View>
-
-          <View style={styles.companyInfoContainer}>
-            <Text style={styles.companyLabel}>Número de Contacto:</Text>
-            <Text style={styles.companyValue}>+1 234 567 890</Text>
-          </View>
-
-          <View style={styles.companyInfoContainer}>
-            <Text style={styles.companyLabel}>Redes Sociales:</Text>
-            <View style={styles.socialMediaContainer}>
-              <IconButton
-                icon="facebook"
-                color="#4267B2"
-                size={24}
-                onPress={() => {}}
-              />
-              <IconButton
-                icon="instagram"
-                color="#C13584"
-                size={24}
-                onPress={() => {}}
-              />
-              <IconButton
-                icon="twitter"
-                color="#1DA1F2"
-                size={24}
-                onPress={() => {}}
-              />
-            </View>
-          </View>
-        </View>
-      </View>
+      <CommentSection EntidadId={service.id} TipoEntidad="Servicio" />
+      <CompanyDetails 
+      companyName={servicio.prestador.nombre}
+      contactNumber={servicio.prestador.telefono}
+      prestadorId={servicio.prestador.id}
+      />
     </ScrollView>
   );
 };

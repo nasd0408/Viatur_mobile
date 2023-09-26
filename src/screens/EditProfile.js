@@ -1,132 +1,212 @@
-import React from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
-import { user } from "../utils/dev";
-import { TextInput } from 'react-native-paper';
-import { DrawerContentScrollView } from '@react-navigation/drawer';
+import React, { useEffect, useState } from 'react';
+import { View, StyleSheet, KeyboardAvoidingView,  } from 'react-native';
+import { Text, Button, TextInput, Avatar, Menu, Divider,Modal } from 'react-native-paper';
+import axios from 'axios';
+import { API_BASE_URL } from '../utils/dev';
+import { useUser} from '../context/UserContext';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import * as ImagePicker from 'expo-image-picker';
 
-const EditProfile = ({navigation, route, props}) => {
-  const [text, setText] = React.useState("");
-  const {user} = route.params;
-  console.log(user);
 
-  const handleBackProfile = () => {
-    navigation.navigate('Profile');
+const EditProfileScreen = ({ navigation }) => {
+  const { userData, fetchUserData  } = useUser();
+  const [profilePicture, setProfilePicture] = useState(null);
+  const [nombres, setNombres] = useState('');
+  const [apellidos, setApellidos] = useState('');
+  const [direccion, setDireccion] = useState('');
+  const [telefono, setTelefono] = useState('');
+  const [fechaNacimiento, setFechaNacimiento] = useState(new Date());
+  const [sexo, setSexo] = useState('');
+
+  const [sexModalVisible, setSexModalVisible] = useState(false);
+  const [datePickerVisible, setDatePickerVisible] = useState(false)
+  
+  const formData = new FormData()
+  function setFormData(key, value) {
+    if (value !== undefined) {
+      formData.append(key, value);
+    }
+  }
+  const openMenu = () => setSexModalVisible(true);
+  const closeMenu = () => setSexModalVisible(false);
+  
+  useEffect(() => {
+    // Initialize state variables with user data when userData changes
+    if (userData) {
+      setNombres(userData.persona.nombres);
+      setApellidos(userData.persona.apellidos);
+      setDireccion(userData.persona.direccion);
+      setTelefono(userData.persona.telefono);
+      setFechaNacimiento(new Date(userData.persona.fechaNacimiento));
+      setSexo(userData.persona.sexo);
+    }
+  }, [userData]);
+  
+  const showDatePicker = () => setDatePickerVisible(true);
+  const hideDatePicker = () => setDatePickerVisible(false);
+
+  function obtenerNombreSexo(inicialSexo) {
+    switch (inicialSexo) {
+      case 'M':
+        return 'Masculino';
+      case 'F':
+        return 'Femenino';
+      default:
+        return 'Otro';
+    }
   }
 
+ 
+  const pickProfilePicture = async () => {
+    try {
+      const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (permissionResult.granted === false) {
+        alert('Permission to access the camera roll is required!');
+        return;
+      }
+
+      const imageResult = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        quality: 1,
+      });
+
+      if (!imageResult.canceled) {
+        setProfilePicture(imageResult.uri)
+       
+      }
+    } catch (error) {
+      console.log('Error picking profile picture:', error);
+    }
+  };
+  const handleDateChange = (event, date) => {
+    if (date) {
+      setFechaNacimiento(date);
+    }
+    hideDatePicker();
+  };
+
+  function formatDateToYYYYMMDD(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed, so we add 1
+    const day = String(date.getDate()).padStart(2, '0');
+  
+    return `${year}-${month}-${day}`;
+  }
+  const handleSave = async () => {
+    try {
+
+      setFormData('nombres', nombres)
+      setFormData('apellidos', apellidos)
+      setFormData('direccion', direccion)
+      setFormData('telefono', telefono)
+      setFormData('sexo', sexo)
+      setFormData('fechaNacimiento', formatDateToYYYYMMDD(fechaNacimiento))
+      formData.append('files',{
+        uri: profilePicture,
+        type: 'image/jpeg', // Set the correct MIME type based on the image type
+        name: 'profile.jpg', // Set a default name for the file
+      });
+      
+      // Send the data using Axios
+      await axios.put(`${API_BASE_URL}/persona`, formData, {
+       headers: {
+         'Content-Type': 'multipart/form-data',
+        },
+      });
+      await fetchUserData()
+      
+      // Redirect back to the profile screen after successful update
+      navigation.navigate('Profile');
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      // Handle error as needed
+    }
+  };
+  const profilePictureUrl = userData.persona.foto
+    ? `${API_BASE_URL}/persona/foto/${userData.persona.foto}`
+    : null;
+
   return (
-    <DrawerContentScrollView {...props} contentContainerStyle={styles.drawerContentContainer}>
-      <Image style={styles.profileImage} source={{ uri: user.FotoDePerfil }} />
-      <View style={styles.separator} />
-      <TextInput style={styles.name}>{`${user.Nombre} ${user.Apellido}`}</TextInput>
-      <View style={styles.separator} />
-      <View style={styles.row}>
-        <Text style={styles.label}> ID: </Text>
-        <Text style={styles.text}>{user.TuristaID}</Text>
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.label}> Username: </Text>
-        <Text style={styles.text}>{user.UsuarioID}</Text>
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.label}> Address: </Text>
-        <TextInput style={styles.text}>{user.Direccion}</TextInput>
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.label}> Phone: </Text>
-        <TextInput style={styles.text}>{user.Telefono}</TextInput>
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.label}> Date of Birth: </Text>
-        <TextInput style={styles.text}>{user.FechaDeNacimiento}</TextInput>
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.label}> Registration Date: </Text>
-        <Text style={styles.text}>{user.FechaDeRegistro}</Text>
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.label}> Status: </Text>
-        <TextInput style={styles.text}>{user.Estado}</TextInput>
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.label}> Password: </Text>
-        <TextInput style={styles.text}> Password </TextInput>
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.label}> New Password: </Text>
-        <TextInput style={styles.text}> New Password </TextInput>
-      </View>
-      <View style={styles.separator} />
-      <View style={styles.buttonContainer}>
-      <TouchableOpacity style={styles.editButton} onPress={handleBackProfile}>
-          <Text style={styles.editButtonText}>Back Profile</Text>
-      </TouchableOpacity>
-      </View>
-      <View style={styles.separator} />
-      </DrawerContentScrollView>
+    <KeyboardAvoidingView keyboardVerticalOffset={10} behavior='position' style={styles.container} >
+      
+       {profilePicture ? (
+              <Avatar.Image source={{ uri: profilePicture }} size={100} style={{ alignSelf: "center", marginBottom: 15 }} />
+              ) : (
+              <Avatar.Image source={{ uri: profilePictureUrl }} size={100} style={{ alignSelf: "center", marginBottom: 15 }} />
+            )}
+             <Button
+              mode="contained"
+              onPress={pickProfilePicture}
+              style={{ marginBottom: 15 }}
+              icon={"camera"}>
+              Seleccionar foto de perfil
+            </Button>
+      <Text style={styles.label}>Nombre:</Text>
+      <TextInput
+        style={styles.input}
+        value={nombres}
+        onChangeText={ setNombres}
+      />
+      <Text style={styles.label}>Apellido:</Text>
+      <TextInput
+        style={styles.input}
+        value={apellidos}
+        onChangeText={ setApellidos}
+      />
+      <Text style={styles.label}>Dirección:</Text>
+      <TextInput
+        style={styles.input}
+        value={direccion}
+        onChangeText={setDireccion}
+      />
+      <Text style={styles.label}>Número de Teléfono:</Text>
+      <TextInput
+        style={styles.input}
+        value={telefono}
+        onChangeText={setTelefono}
+      />
+      <Menu
+          visible={sexModalVisible}
+          onDismiss={closeMenu}
+          anchor={<Button mode='contained' onPress={openMenu}>{sexo? obtenerNombreSexo(sexo) :"Selecciona tu sexo"}</Button>}>
+          <Menu.Item onPress={() => {setSexo("M"); closeMenu()}} title="Masculino" />
+          <Divider />
+          <Menu.Item onPress={() => {setSexo("F");closeMenu()}} title="Femenino" />
+          <Divider />
+          <Menu.Item onPress={() => {setSexo("O");closeMenu()}} title="Otro" />
+        </Menu>
+        <Button style={{marginTop:10}} onPress={showDatePicker} mode="contained">
+        {fechaNacimiento ? `Fecha: ${fechaNacimiento.getDate()}/${fechaNacimiento.getMonth() + 1}/${fechaNacimiento.getFullYear()}` : 'Seleccionar fecha de nacimiento'}      </Button>
+       <Modal visible={datePickerVisible} onDismiss={hideDatePicker} contentContainerStyle={styles.modalContainer}>
+          <DateTimePicker
+            value={fechaNacimiento}
+            mode="date"
+            display="spinner"
+            onChange={handleDateChange}
+          />
+          <Button onPress={hideDatePicker}>Done</Button>
+        </Modal>
+      <Button style={{marginTop:10}} onPress={handleSave} mode="contained">
+        Guardar Cambios
+      </Button>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 20,
-    margin: 20,
-    backgroundColor: "#F5F5F5",
-    paddingBottom: 60,
-  },
-  profileImage: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    marginBottom: 20,
-  },
-  name: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 10,
+    padding: 16,
   },
   label: {
     fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 10,
-    textAlign: "right",
+    fontWeight: 'bold',
+    marginBottom: 8,
   },
-  text: {
-    fontSize: 16,
-    marginBottom: 10,
-    textAlign: "left",
+  input: {
+    marginBottom: 16,
   },
-  separator: {
-    borderBottomColor: "#CCC",
-    borderBottomWidth: 1,
-    width: "100%",
-    marginBottom: 10,
-  },
-  TextInput: {
-    
-  },
-  buttonContainer: {
-    marginTop: 0,
-    alignItems: "center",
-    marginBottom: 5,
-  },
-  editButton: {
-    backgroundColor: colors.Primary,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-    borderRadius: 5,
-  },
-  editButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 5,
-  }
 });
-export default EditProfile;
+
+export default EditProfileScreen;

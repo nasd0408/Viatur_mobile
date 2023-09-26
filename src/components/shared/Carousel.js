@@ -18,10 +18,10 @@ const GeneralCarousel = ({ navigation, data, isLoading, cardType, onMarkerUpdate
     if (authState.authenticated === null) {
       setVisible(!visible);
     } else {
-      if (cardType === 'sites') {
+      if (cardType === 'sites' || cardType==='sites-recomendado') {
         navigation.navigate('DetailScreen', { destinoId:itemId , cardType });
       } else if (cardType === 'servicios') {
-        navigation.navigate('DetailService', { item, cardType });
+        navigation.navigate('DetailService', { item, cardType })
       } else if (cardType === 'promocion') {
         navigation.navigate('DetailPromocion', { item, cardType });
       }
@@ -47,7 +47,7 @@ const GeneralCarousel = ({ navigation, data, isLoading, cardType, onMarkerUpdate
   };
 
   const renderCard = ({ item }) => {
-    if (cardType === 'sites') {
+    if (cardType === 'sites' || cardType === 'sites-recomendado') {
       return (
         <SiteCard
           site={item}

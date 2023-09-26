@@ -122,6 +122,7 @@ const AppNavigator = () => {
           }}
         />
       )}
+      {authState?.authenticated &&(
       <Drawer.Screen
         name="Notifications"
         component={NotificationsScreen}
@@ -131,7 +132,7 @@ const AppNavigator = () => {
           ),
           title: 'Notificaciones',
         }}
-      />
+      />)}
     </Drawer.Navigator>
   );
 };
