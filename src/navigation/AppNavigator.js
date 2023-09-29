@@ -25,6 +25,8 @@ import DetailScreen from '../screens/DetailScreen';
 import ServiceDetailScreen from '../screens/ServiceDetailScreen';
 import PromocionDetail from '../screens/PromocionDetail';
 import DetailRutaScreen from '../screens/DetailRutaScreen';
+import ChangePasswordScreen from '../screens/ChangePasswordScreen';
+import ChangePreferencesScreen from '../screens/ChangePreferencesScreen';
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
@@ -69,7 +71,7 @@ const HomeStack = () => (
 );
 
 const MainStack = () => (
-  <Stack.Navigator screenOptions={{ headerShown: false }}>
+  <Stack.Navigator  screenOptions={{ headerShown: false }}>
     <Stack.Screen name="HomeStack" component={HomeStack} options={{headerShown:false}}/>
     {/*<Stack.Screen name="DetailSite" component={DetailSiteScreen} />*/}
     <Stack.Screen name="SearchScreen" component={SearchScreen}/>
@@ -80,6 +82,8 @@ const MainStack = () => (
     <Stack.Screen name='DetailPromocion' component={PromocionDetail}/>
     <Stack.Screen name='DetailRuta' component={DetailRutaScreen}/>
     <Stack.Screen name="Edit" component={EditProfile}/>
+    <Stack.Screen name="ChangePassword" component={ChangePasswordScreen}/>
+    <Stack.Screen name="EditPreferences" component={ChangePreferencesScreen}/>
 
 
   </Stack.Navigator>

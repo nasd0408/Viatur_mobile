@@ -78,7 +78,7 @@ const DetailSiteScreen = ({ route, navigation }) => {
 
       </View>
 
-      <Button onPress={handleGoBack} style={styles.button}>
+      <Button onPress={handleGoBack} mode='contained' style={styles.button}>
         Volver
       </Button>
     </ScrollView>

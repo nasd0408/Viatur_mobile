@@ -1,21 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { View, ImageBackground } from 'react-native';
-import styles from '../../../styles/LoginScreenStyles';
-import { Button, Text, Chip, Divider } from 'react-native-paper';
-import { useAuth } from '../../../context/AuthContext';
-import { ScrollView } from 'react-native-gesture-handler';
-import { useSignupContext } from '../../../context/SignUpContext';
-import { API_BASE_URL } from '../../../utils/dev';
+import { StyleSheet, View } from 'react-native'
+import React from 'react'
+import { useState } from 'react';
+import { Button, Chip, Divider, Text, Portal, Snackbar, Title } from 'react-native-paper';
 import axios from 'axios';
-import ColorScheme from '../../../utils/ColorScheme';
+import { API_BASE_URL } from '../utils/dev';
+import { useEffect } from 'react';
+import { ScrollView } from 'react-native-gesture-handler';
+import styles from '../styles/LoginScreenStyles'
+import ColorScheme from '../utils/ColorScheme';
+import { AlgoritmoContext } from '../context/AlgoritmoContext';
+import { useContext } from 'react';
 
-
-const ThirdStepScreen = ({ navigation }) => {
-  const { onRegister } = useAuth();
-  const { formData, setFormData } = useSignupContext(); // Obtiene los datos del contexto
-
-
-  //Preferencias
+const ChangePreferencesScreen = ({navigation}) => {
+    //Preferencias
   const [selectedBelleza, setSelectedBelleza] = useState();
   const [selectedBioma, setSelectedBioma] = useState();
   const [selectedClima, setSelectedClima] = useState();
@@ -47,6 +44,12 @@ const ThirdStepScreen = ({ navigation }) => {
   const [categoriaChipsData, setCategoriaChipsData] = useState([])
 
 
+  const [error, setError] = useState(null)
+  const [success, setSuccess] = useState(null)
+  const [isLoadingSubmit, setIsLoadingSubmit] = useState(false)
+  const [isloadingFetch, setIsloadingFetch] = useState(false)
+
+  const {fetchAlgoritmo} = useContext(AlgoritmoContext)
   const renderCategoryChips = (categoryName, chipsData, selectedState, setSelectedState) => {
     return (
       <View>
@@ -54,7 +57,7 @@ const ThirdStepScreen = ({ navigation }) => {
         <View style={styles.chipsContainer}>
           {chipsData.map((chip) => (
             <Chip
-            rippleColor={ColorScheme.Verdigris}
+             rippleColor={ColorScheme.Verdigris}
               key={chip.id}
               style={styles.chip}
               onPress={() => handleChipSelection(chip.id, setSelectedState)}
@@ -87,6 +90,7 @@ const ThirdStepScreen = ({ navigation }) => {
 
   // UseEffect to fetch data when the component mounts
   useEffect(() => {
+    
     fetchCategoryData('biomas', setBiomaChipsData);
     fetchCategoryData('climas', setClimaChipsData);
     fetchCategoryData('temporada', setTemporadasChipsData);
@@ -101,39 +105,38 @@ const ThirdStepScreen = ({ navigation }) => {
     fetchCategoryData('area-geografica', setAreaGeograficaChipsData);
     fetchCategoryData('categorias', setCategoriaChipsData);
     fetchCategoryData('actividades-culturales', setActividadesCulturalesChipsData);
+    
   }, []);
-
+  useEffect(() => {
+    const fetchUserPreferences = async () => {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/preferencias/mis-preferencias`);
+        const userPreferences = response.data.data;
+  
+        // Actualiza los estados con las preferencias del usuario
+        setSelectedBioma(userPreferences.bioma?.id || null);
+        setSelectedClima(userPreferences.clima?.id || null);
+        setSelectedGastronomia(userPreferences.gastronomia?.id || null);
+        setSelectedBelleza(userPreferences.bellezaNatural?.id || null);
+        setSelectedCultura(userPreferences.culturaLocal?.id || null);
+        setSelectedBiodiversidad(userPreferences.diversidad?.id || null);
+        setSelectedTemporadas(userPreferences.temporada?.id || null);
+        setselectedAreaGeografica(userPreferences.areaGeografica?.id || null);
+        setselectedCategoria(userPreferences.categoria?.id || null);
+        setselectedTipoServicioProd(userPreferences.tipoProdServ?.id || null);
+        setSelectedActividadesTuristicas(userPreferences.actividadTuristica?.id || null);
+        setSelectedInfraestructura(userPreferences.infraestructuraTuristica?.id || null);
+        setSelectedActividadesCulturales(userPreferences.actividadCultural?.id || null);
+      } catch (error) {
+        console.error('Error fetching user preferences:', error);
+      }
+    };
+  
+    fetchUserPreferences();
+  }, []);
+  
   const handleChipSelection = (selectedItem, setSelectedItem) => {
     setSelectedItem(selectedItem);
-  };
-
-  const handleRegister = async () => {
-    setFormData("bioma",selectedBioma||null)
-    setFormData("clima", selectedClima)
-    setFormData("gastronomia",selectedGastronomia)
-    setFormData("bellezaNatural", selectedBelleza)
-    setFormData("culturaLocal",selectedCultura)
-    setFormData("diversidad",selectedBiodiversidad)
-    setFormData("temporada",selectedTemporadas)
-    setFormData("areaGeografica",selectedAreaGeografica)
-    setFormData("categoria", selectedCategoria)
-    setFormData("tipoProdServ",selectedTipoServicioProd)
-    setFormData("actividadTuristica",selectedActividadesTuristicas)
-    setFormData("infraestructuraTuristica",selectedInfraestructura)
-    setFormData("actividadCultural", selectedActividadesCulturales)
-    //everything else
-    try {
-      const result = await onRegister(formData);
-
-      if (result && result.error) {
-        console.error('Registration error:', result.msg || 'Unknown error');
-      } else {
-        console.log('Registration successful');
-        navigation.navigate('Login');
-      }
-    } catch (error) {
-      console.error('Error during registration:', error.message || 'Unknown error');
-    }
   };
 
   const biomaChips = renderCategoryChips(
@@ -215,21 +218,49 @@ const ThirdStepScreen = ({ navigation }) => {
     setSelectedActividadesTuristicas
   )
  
-
+  const handleSubmit = async () => {
+    // Crea un objeto con las preferencias seleccionadas
+    setIsLoadingSubmit(true)
+    const selectedPreferences = {
+      bioma: selectedBioma || null,
+      clima: selectedClima || null,
+      gastronomia: selectedGastronomia || null,
+      bellezaNatural: selectedBelleza || null,
+      culturaLocal: selectedCultura || null,
+      diversidad: selectedBiodiversidad || null,
+      temporada: selectedTemporadas || null,
+      areaGeografica: selectedAreaGeografica || null,
+      categoria: selectedCategoria || null,
+      tipoProdServ: selectedTipoServicioProd || null,
+      actividadTuristica: selectedActividadesTuristicas || null,
+      infraestructuraTuristica: selectedInfraestructura || null,
+      actividadCultural: selectedActividadesCulturales || null,
+    };
+    try {
+        // Realiza la solicitud PUT para actualizar las preferencias del usuario
+        await axios.put(`${API_BASE_URL}/preferencias`, selectedPreferences);
+    
+        // Muestra una Snackbar de éxito
+        setSuccess('Preferencias actualizadas con éxito');
+        setIsLoadingSubmit(false)
+        fetchAlgoritmo()
+      } catch (error) {
+        console.error('Error al actualizar las preferencias:', error);
+    
+        // Muestra una Snackbar de error
+        setError('No se pudieron actualizar las preferencias');
+      }
+    };
+    
+  
 
 
   return (
 
-    <ImageBackground
-      source={require('../../../../assets/Img/LoginScreenBkg.jpg')}
-      resizeMode='cover'
-      style={styles.backgroundImage}
-    >
       <View style={styles.overlay} >
         <ScrollView keyboardShouldPersistTaps="always" >
           <View style={styles.container} >
-            <Text style={styles.appName} variant='titleLarge'>Laraventur</Text>
-            <Text style={styles.footerText}>Preferencias </Text>
+            <Title style={styles.appName} >Editar preferencias</Title>
 
             <Divider></Divider>
             <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
@@ -254,26 +285,56 @@ const ThirdStepScreen = ({ navigation }) => {
               <Button
                 icon="arrow-left-bold"
                 mode='contained'
-                onPress={() => navigation.navigate("Second")}
+                onPress={() => navigation.goBack()}
                 style={{ marginBottom: 15, flex: 1, marginRight: 10 }}
               >
-                Paso anterior
+                Regresar
               </Button>
               <Button
-                icon="account-check"
-
+                icon="wrench"
+                onPress={handleSubmit}
                 mode='contained'
-                onPress={handleRegister}
                 style={{ marginBottom: 15, flex: 1, marginLeft: 10 }}
+                loading={isLoadingSubmit}
               >
-                Registrate!
+                Cambiar!
               </Button>
             </View>
           </View>
         </ScrollView>
+        <Portal>
+  <Snackbar
+    visible={error !== null}
+    onDismiss={() => setError(null)}
+    action={{
+      onPress: () => setError(null),
+      icon: 'close',
+    }}
+    style={{
+      backgroundColor: ColorScheme.Primary,
+      borderRadius: 10,
+      padding: 10,
+    }}
+  >
+    <Text style={{ color: ColorScheme.OffWhite }}>{error}</Text>
+  </Snackbar>
+  <Snackbar
+    visible={success !== null}
+    onDismiss={() => setSuccess(null)}
+    style={{
+      backgroundColor: ColorScheme.Primary,
+      borderRadius: 10,
+      padding: 10,
+    }}
+    
+  >
+    <Text style={{ color: ColorScheme.OffWhite }}>{success}</Text>
+  </Snackbar>
+</Portal>
       </View>
-    </ImageBackground>
   )
 }
 
-export default ThirdStepScreen
+
+export default ChangePreferencesScreen
+

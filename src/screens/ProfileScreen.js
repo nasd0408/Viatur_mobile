@@ -2,12 +2,16 @@ import React from 'react';
 import { View, Image, StyleSheet } from 'react-native';
 import { API_BASE_URL } from '../utils/dev';
 import { useUser } from '../context/UserContext';
-import { Button, Text } from 'react-native-paper';
+import { Button, Divider, FAB, Text } from 'react-native-paper';
 import { Dimensions } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 
 const ProfileScreen = ({navigation}) => {
+  const [state, setState] = React.useState({ open: false });
 
+  const onStateChange = ({ open }) => setState({ open });
+
+  const { open } = state;
   const { userData } = useUser(); // Access user data from the context
   function obtenerNombreSexo(inicialSexo) {
     switch (inicialSexo) {
@@ -24,7 +28,7 @@ const ProfileScreen = ({navigation}) => {
     : null;
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
+    <View style={styles.container}>
       <View style={styles.profileImageContainer}>
         {profilePictureUrl && (
           <Image
@@ -33,8 +37,8 @@ const ProfileScreen = ({navigation}) => {
           />
         )}
         {/* Add a transparent overlay with a gradient */}
-        <View style={styles.overlay}></View>
       </View>
+      <Divider />
       <Text style={styles.label}>Nombre:</Text>
       <Text style={styles.value}>{userData.persona.nombres} {userData.persona.apellidos}</Text>
       <Text style={styles.label}>Correo electrónico:</Text>
@@ -51,17 +55,44 @@ const ProfileScreen = ({navigation}) => {
       <Text style={styles.value}>{obtenerNombreSexo(userData.persona.sexo)}</Text>
       <Text style={styles.label}>En Laraventur con rol de :</Text>
       <Text style={styles.value}>{userData.rol.nombre}</Text>
-      <Button
-      onPress={()=>navigation.navigate('Edit')}
-      mode='contained'
-      >Editar perfil</Button>
-    </ScrollView>
+      <FAB.Group
+          open={open}
+          visible
+          icon={open ? 'close' : 'pencil'}
+          actions={[
+            {
+              icon: 'account-wrench',
+              label: 'Editar preferencias',
+              onPress: ()=>{navigation.navigate('EditPreferences')}
+            },
+            {
+              icon: 'account',
+              label: 'Editar perfil',
+              onPress: ()=>{navigation.navigate('Edit')}
+            },
+            {
+              icon: 'lock',
+              label: 'Cambiar contraseña',
+              onPress: ()=>{navigation.navigate('ChangePassword')},
+            },
+          ]}
+          onStateChange={onStateChange}
+          onPress={() => {
+            if (open) {
+              // do something if the speed dial is open
+            }
+          }}
+        />
+    </View>
+    
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
+    height:'100%',
+    justifyContent:'space-evenly'
   },
   profileImageContainer: {
     position: 'relative', // Make sure the overlay stays on top of the image

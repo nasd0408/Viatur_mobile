@@ -70,8 +70,6 @@ const HomeScreen = ({ navigation }) => {
       // Change the image index to the next index
       setImageIndex((prevIndex) => (prevIndex + 1) % imageSources.length);
     }, 10000); // Change image every 5 seconds
-      console.log(servicioTuristico[0]);
-      console.log(ServiciosRecomendados[0]);
     return () => {
       // Clear the interval when the component unmounts
       clearInterval(interval);

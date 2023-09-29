@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import { ActivityIndicator, Paragraph, SegmentedButtons, Text,Portal,Snackbar } from 'react-native-paper';
+import { ActivityIndicator, Paragraph, SegmentedButtons, Text,Portal,Snackbar, TextInput } from 'react-native-paper';
 import axios from 'axios';
 import { API_BASE_URL } from '../utils/dev';
 import SiteCard from '../components/Sites/SiteCard';
@@ -11,13 +11,18 @@ import { useAuth } from '../context/AuthContext';
 
 const SearchScreen = ({ navigation }) => {
   const [searchText, setSearchText] = useState({});
+  const [searchLocalText, setSearchLocalText] = useState('')
   const [searchResults, setSearchResults] = useState([]);
+
   const [loading, setLoading] = useState(false);
   const [biomas, setBiomas] = useState([]);
   const [climas, setClimas] = useState([]);
   const [diversidad, setDiversidad] = useState([]);
   const [gastronomia, setGastronomia] = useState([]);
   const [temporadas, setTemporadas] = useState([]);
+  const [bellezaNatural, setBellezaNatural] = useState([])
+  const [culturaLocal, setCulturaLocal] = useState([])
+
   const [visible, setVisible] = useState(false);
 
   const { authState } = useAuth();
@@ -39,6 +44,8 @@ const SearchScreen = ({ navigation }) => {
     fetchPossibleValues('diversidad').then((diversidadData) => setDiversidad(diversidadData));
     fetchPossibleValues('gastronomia').then((gastronomiaData) => setGastronomia(gastronomiaData));
     fetchPossibleValues('temporada').then((temporadasData) => setTemporadas(temporadasData));
+    fetchPossibleValues('belleza-natural').then((bellezaNaturalData)=>setBellezaNatural(bellezaNaturalData))
+    fetchPossibleValues('cultura-local').then((culturaLocalData)=>setCulturaLocal(culturaLocalData))
 
   }, []);
   const fetchData = async () => {
@@ -51,6 +58,8 @@ const SearchScreen = ({ navigation }) => {
           biomaId: searchText.biomaId || '',
           diversidadId: searchText.diversidadId || '',
           temporadaId: searchText.temporadaId || '',
+          culturaLocalId: searchText.culturaLocalId || '',
+          bellezaNaturalId:searchText.bellezaNaturalId||''
         },
       });
       setSearchResults(response.data.data);
@@ -95,6 +104,7 @@ const SearchScreen = ({ navigation }) => {
           }))}
           density='medium'
           />
+
       </View>
           </ScrollView>
 
@@ -111,7 +121,15 @@ const SearchScreen = ({ navigation }) => {
       />
     );
   };
-
+  const renderFilteredResults = () => {
+    // Filtrar los resultados locales en función del nombre ingresado en el TextInput
+    const filteredResults = searchResults.filter((item) =>
+      item.nombre.toLowerCase().includes(searchLocalText.toLowerCase())
+    );
+  
+    return filteredResults.map((item) => renderItem({ item }));
+  };
+  
   const handleValueChange = (param, value) => {
     setSearchText((prev) => {
       // If the selected value is already the same as the current value, set it to null (unselect)
@@ -138,7 +156,9 @@ const SearchScreen = ({ navigation }) => {
         {renderSegmentedButtons('Diversidad', diversidad, diversidad, 'diversidadId')}
         {renderSegmentedButtons('Gastronomia', gastronomia, gastronomia, 'gastronomiaId')}
         {renderSegmentedButtons('Temporadas', temporadas, temporadas, 'temporadaId')}
-
+        {renderSegmentedButtons('Cultura Loca',culturaLocal, culturaLocal,'culturaLocalId')}
+        {renderSegmentedButtons('Bellezas naturales', bellezaNatural,bellezaNatural,'bellezaNaturalId')}
+        <TextInput label={'Nombre'} value={searchLocalText} onChangeText={setSearchLocalText}/>
       </View>
 
 
@@ -148,7 +168,8 @@ const SearchScreen = ({ navigation }) => {
         </View>
       ) : (
         // Use map to render the searchResults array
-        searchResults.map((item) => renderItem({ item })) // Pass each item to the renderItem function
+        //searchResults.map((item) => renderItem({ item })) // Pass each item to the renderItem function
+        renderFilteredResults()
       )}
     </ScrollView>
     <Portal>

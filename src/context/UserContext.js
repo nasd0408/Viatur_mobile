@@ -25,7 +25,6 @@ export const UserProvider = ({ children }) => {
         setUserData(response.data.data);
       }
     } catch (error) {
-      console.error('Error fetching user data:', error);
     }
   };
   useEffect(() => {

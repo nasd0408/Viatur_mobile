@@ -8,7 +8,7 @@ export const AlgoritmoContext = createContext();
 
 // Crear el proveedor del contexto
 export const AlgoritmoProvider = ({ children }) => {
-    const { authState } = useAuth(); // Access the outer context
+  const { authState } = useAuth(); // Access the outer context
 
   const [DestinosRecomendados, setDestinosRecomendados] = useState([]);
   const [ServiciosRecomendados, setServiciosRecomendados] = useState([]);
@@ -46,11 +46,14 @@ export const AlgoritmoProvider = ({ children }) => {
     }
   };
 
+  async function fetchAlgoritmo() {
+    fetchDestinosRecomendados();
+    fetchServiciosRecomendados();
+  }
   // Usar useEffect para realizar los fetch cuando el authState cambie
   useEffect(() => {
     if (authState) {
-      fetchDestinosRecomendados();
-      fetchServiciosRecomendados();
+      fetchAlgoritmo()
     }
   }, [authState]);
 
@@ -59,6 +62,7 @@ export const AlgoritmoProvider = ({ children }) => {
     DestinosRecomendados,
     ServiciosRecomendados,
     isLoading,
+    fetchAlgoritmo,
   };
 
   return (

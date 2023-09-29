@@ -20,7 +20,7 @@ export default StyleSheet.create({
   appName: {
     fontSize: 32,
     fontWeight: 'bold',
-    marginBottom: 30,
+    marginVertical: 30,
     alignSelf:'center',
     color: '#fff', // Text color for better visibility on top of the image
   },

@@ -15,7 +15,7 @@ export const ServicioTuristicoProvider = ({ children }) => {
 
  const fetchServicioTuristico = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/servicios`);
+      const response = await axios.get(`${API_BASE_URL}/servicios/sin-morosos`);
       setServicioTuristico(response.data.data);
       setIsLoading(false);
     } catch (error) {

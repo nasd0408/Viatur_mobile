@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, KeyboardAvoidingView,  } from 'react-native';
-import { Text, Button, TextInput, Avatar, Menu, Divider,Modal } from 'react-native-paper';
+import { View, StyleSheet } from 'react-native';
+import { Text, Button, TextInput, Avatar, Menu, Divider,Modal, Portal,Snackbar } from 'react-native-paper';
 import axios from 'axios';
 import { API_BASE_URL } from '../utils/dev';
 import { useUser} from '../context/UserContext';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as ImagePicker from 'expo-image-picker';
+import ColorScheme from '../utils/ColorScheme';
+import { ScrollView } from 'react-native-gesture-handler';
 
 
 const EditProfileScreen = ({ navigation }) => {
@@ -17,16 +19,23 @@ const EditProfileScreen = ({ navigation }) => {
   const [telefono, setTelefono] = useState('');
   const [fechaNacimiento, setFechaNacimiento] = useState(new Date());
   const [sexo, setSexo] = useState('');
+  const [isLoadingEdit, setIsLoadingEdit] = useState(false)
+  const [editError, setEditError] = useState(null)
+  const [success, setSuccess] = useState(null);
+
 
   const [sexModalVisible, setSexModalVisible] = useState(false);
   const [datePickerVisible, setDatePickerVisible] = useState(false)
   
   const formData = new FormData()
+
+
   function setFormData(key, value) {
     if (value !== undefined) {
       formData.append(key, value);
     }
   }
+  
   const openMenu = () => setSexModalVisible(true);
   const closeMenu = () => setSexModalVisible(false);
   
@@ -94,6 +103,7 @@ const EditProfileScreen = ({ navigation }) => {
     return `${year}-${month}-${day}`;
   }
   const handleSave = async () => {
+    setIsLoadingEdit(true)
     try {
 
       setFormData('nombres', nombres)
@@ -102,11 +112,12 @@ const EditProfileScreen = ({ navigation }) => {
       setFormData('telefono', telefono)
       setFormData('sexo', sexo)
       setFormData('fechaNacimiento', formatDateToYYYYMMDD(fechaNacimiento))
+      if(profilePicture){
       formData.append('files',{
         uri: profilePicture,
         type: 'image/jpeg', // Set the correct MIME type based on the image type
         name: 'profile.jpg', // Set a default name for the file
-      });
+      });}
       
       // Send the data using Axios
       await axios.put(`${API_BASE_URL}/persona`, formData, {
@@ -117,9 +128,13 @@ const EditProfileScreen = ({ navigation }) => {
       await fetchUserData()
       
       // Redirect back to the profile screen after successful update
+      setIsLoadingEdit(false)
+      setSuccess('Perfil actualizado correctamente')
       navigation.navigate('Profile');
     } catch (error) {
-      console.error('Error updating profile:', error);
+      setEditError(error.message);
+
+      setIsLoadingEdit(false)
       // Handle error as needed
     }
   };
@@ -128,7 +143,7 @@ const EditProfileScreen = ({ navigation }) => {
     : null;
 
   return (
-    <KeyboardAvoidingView keyboardVerticalOffset={10} behavior='position' style={styles.container} >
+    <ScrollView contentContainerStyle={styles.container} >
       
        {profilePicture ? (
               <Avatar.Image source={{ uri: profilePicture }} size={100} style={{ alignSelf: "center", marginBottom: 15 }} />
@@ -187,16 +202,48 @@ const EditProfileScreen = ({ navigation }) => {
           />
           <Button onPress={hideDatePicker}>Done</Button>
         </Modal>
-      <Button style={{marginTop:10}} onPress={handleSave} mode="contained">
+      <Button loading={isLoadingEdit} style={{marginTop:10}} onPress={handleSave} mode="contained">
         Guardar Cambios
       </Button>
-    </KeyboardAvoidingView>
+      <Portal>
+        <Snackbar
+        visible={editError !== null}
+        onDismiss={() => setEditError(null)}
+        action={
+          {
+          onPress:() => setEditError(null),
+          icon:'close'
+        }
+        }
+        style={{
+          backgroundColor: ColorScheme.Primary, // Cambia el color de fondo según tus necesidades
+          borderRadius: 10, // Personaliza los estilos según tus necesidades
+          padding: 10, // Personaliza los estilos según tus necesidades
+        }}
+      >
+        <Text style={{ color: ColorScheme.OffWhite }}>{editError}</Text>
+      </Snackbar>
+       {/* Snackbar for displaying success message */}
+        {success && (
+          <Snackbar
+            visible={success !== null}
+            onDismiss={() => setSuccess(null)}
+            style={{
+              backgroundColor: ColorScheme.Primary, // Change the background color for success message
+              borderRadius: 10, // Customize styles as needed
+              padding: 10, // Customize styles as needed
+            }}
+          >
+            <Text style={{ color: ColorScheme.OffWhite }}>{success}</Text>
+          </Snackbar>
+        )}
+      </Portal>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     padding: 16,
   },
   label: {

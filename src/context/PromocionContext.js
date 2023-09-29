@@ -16,11 +16,10 @@ export const PromocionProvider = ({ children }) => {
 
   
       // Fetch promociones from the API
-      const response = await axios.get(`${API_BASE_URL}/promociones`)    
+      const response = await axios.get(`${API_BASE_URL}/promociones/sin-morosos`)    
       setPromociones(response.data.data);
       setIsLoading(false);
     } catch (error) {
-      console.log('Error fetching promociones:', error);
       setIsLoading(false);
     }
   };

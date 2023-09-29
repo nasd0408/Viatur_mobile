@@ -17,7 +17,7 @@ const TourismCompaniesScreen = ({ navigation }) => {
 
   const fetchCompanies = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/prestadores`);
+      const response = await axios.get(`${API_BASE_URL}/prestadores/sin-morosos`);
       setCompanies(response.data.data);
       setLoading(false);
     } catch (error) {
