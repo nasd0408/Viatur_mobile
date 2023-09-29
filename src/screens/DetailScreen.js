@@ -105,8 +105,8 @@ const DetailScreen = ({ route, navigation }) => {
         <CommentSection EntidadId={destino.id} TipoEntidad="Destino" />
       </View> 
 
-      <Button onPress={handleGoBack} style={styles.button}>
-        Go Back
+      <Button mode='contained' icon={'arrow-left'} onPress={handleGoBack} style={styles.button}>
+        Volver
       </Button>
     </ScrollView>
   );
@@ -146,10 +146,8 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   button: {
-    marginTop: 24,
+    marginVertical: 30,
     alignSelf: 'center',
-    paddingHorizontal: 24,
-    marginBottom: 24,
   },
   galleryContainer: {
     marginTop: 16,

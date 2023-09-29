@@ -4,6 +4,7 @@ import { Divider, Title, Text, Paragraph } from 'react-native-paper';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import axios from 'axios';
 import { API_BASE_URL } from '../utils/dev';
+import CompanyDetails from '../components/ContactosPrestador/CompanyDetails';
 
   const DetailRutaScreen = ({ route, navigation }) => {
     const DEFAULT_IMAGE_URL =
@@ -70,39 +71,42 @@ import { API_BASE_URL } from '../utils/dev';
       </View>
     );
   }
-
+  
   return (
     <ScrollView style={styles.container}>
-      <Title style={styles.title}>{ruta.nombre}</Title>
-      <Text style={styles.description}>{ruta.descripcion}</Text>
+      <Text variant='displaySmall' >{ruta.nombre}</Text>
+      <Text variant='bodyLarge'>{ruta.descripcion}</Text>
+      {ruta.serviciosTuristicos && 
+      <Text variant='headlineSmall' style={{marginVertical:20}}>En esta ruta te ofreceremos los siguientes servicios</Text >
+      }
+      {ruta.serviciosTuristicos &&
+      ruta.serviciosTuristicos.map((servicio, index) => (
+        <View key={index}>
+          <Divider ></Divider>
+          <Text variant='headlineMedium' >{servicio.nombre}</Text>
+          <Paragraph>{servicio.descripcion}</Paragraph>
+          <View style={styles.sectionContainer}>
+            <Text variant='bodyMedium' style={{marginTop:20}}>Un vistaso a esta oferta :</Text>
+            <Divider style={styles.divider} />
+            <ScrollView horizontal>
+              {imageServicioUrls[index] && imageServicioUrls[index].map((imageUrl, i) => (
+                <View key={i} style={{ marginRight: 10 }}>
+                  <Image
+                    source={{ uri: imageUrl }}
+                    style={{ width: 200, height: 200 }}
+                  />
+                </View>
+              ))}
+            </ScrollView>
+          </View>
+        </View>
+      ))}
+      <Divider/>
+      <Text variant='headlineMedium'>En esta ruta podras contar con los servicios de:</Text>
       {ruta.prestadoresDeServicio &&
         ruta.prestadoresDeServicio.map((prestador, index) => (
           <View key={index}>
-            <Title>{prestador.nombre}</Title>
-            <Paragraph>telefono: {prestador.telefono}</Paragraph>
-            <Paragraph>Dirección: {prestador.direccion}</Paragraph>
-          </View>
-        ))}
-        {ruta.serviciosTuristicos &&
-        ruta.serviciosTuristicos.map((servicio, index) => (
-          <View key={index}>
-            <Title>Servicio Turístico {index + 1}</Title>
-            <Paragraph>Nombre: {servicio.nombre}</Paragraph>
-            <Paragraph>Descripción: {servicio.descripcion}</Paragraph>
-            <View style={styles.sectionContainer}>
-              <Title>Galería del Servicio</Title>
-              <Divider style={styles.divider} />
-              <ScrollView horizontal>
-                {imageServicioUrls[index] && imageServicioUrls[index].map((imageUrl, i) => (
-                  <View key={i} style={{ marginRight: 10 }}>
-                    <Image
-                      source={{ uri: imageUrl }}
-                      style={{ width: 200, height: 200 }}
-                    />
-                  </View>
-                ))}
-              </ScrollView>
-            </View>
+            <CompanyDetails companyName={prestador.nombre} contactNumber={prestador.telefono} prestadorId={prestador.id} />
           </View>
         ))}
 

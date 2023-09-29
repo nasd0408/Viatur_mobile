@@ -37,7 +37,6 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (formData) => {
     try {
-      console.log(formData);
       const headers = {
         'Accept': '*/*',
         'content-type' : 'multipart/form-data'
@@ -59,7 +58,6 @@ export const AuthProvider = ({ children }) => {
     const result = await axios.post(`${API_URL}/auth/login`, { email, contrasena });
 
     if (result.data.statusCode === 400 && result.data.message === 'VO01') {
-      throw new Error('Invalid email or password. Please try again.'); // Custom error message
     }
 
     setAuthState({

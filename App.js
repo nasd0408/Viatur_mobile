@@ -19,8 +19,10 @@ export default function App() {
       secondary: colors.Secondary,
       onPrimary: colors.OffWhite,
       surfaceVariant:colors.OffWhite,
-    
-      
+      secondaryContainer: colors.Cambridge,
+      primaryContainer: colors.Cambridge,
+      outlineVariant: colors.Primary
+
       
     },
   };

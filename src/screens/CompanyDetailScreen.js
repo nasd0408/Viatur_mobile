@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
-import { Avatar, Card, List } from 'react-native-paper';
+import { Avatar, Card, IconButton, List } from 'react-native-paper';
 import axios from 'axios';
 import { ScrollView } from 'react-native-gesture-handler';
 import { API_BASE_URL } from '../utils/dev';
@@ -40,7 +40,7 @@ const CompanyDetailScreen = ({ route }) => {
         <Card.Title
           title={prestador.nombre}
           subtitle="Detalles del prestador"
-          left={() => <Avatar.Image source={{ uri: prestador.FotoDePerfil }} />}
+          left={() => <IconButton icon={'store'} mode='contained' disabled  size={30}/>}
           titleStyle={{ marginLeft: 20 }}
           subtitleStyle={{ marginLeft: 20 }}
         />

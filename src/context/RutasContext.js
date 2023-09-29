@@ -16,7 +16,6 @@ export const RutasProvider = ({ children }) => {
       setRutas(response.data.data);
       setIsLoading(false);
     } catch (error) {
-      console.log('Error fetching rutas:', error);
       setIsLoading(false);
     }
   };
